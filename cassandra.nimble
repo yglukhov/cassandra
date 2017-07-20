@@ -5,6 +5,4 @@ author        = "Yuriy Glukhov"
 description   = "Cassandra driver bindings"
 license       = "MIT"
 
-# Dependencies
-
-requires "nim >= 0.16.0"
+skipDirs = @["tests", "genbindings"]
