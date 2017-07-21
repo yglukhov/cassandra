@@ -5,17 +5,16 @@ proc test() {.async.} =
     var host = getEnv("CASSANDRA_HOST")
     if host.len == 0: host = "127.0.0.1"
 
-    let cluster = newCluster();
-    let session = newSession();
+    let cluster = newCluster()
+    let session = newSession()
 
-    # Add contact points */
+    # Add contact points
     cluster.setContactPoints(host)
 
-    # Provide the cluster object as configuration to connect the session */
+    # Provide the cluster object as configuration to connect the session
     discard await session.connect(cluster)
     echo "Connected"
 
-    # This operation will block until the result is ready */
     let statement = newStatement("SELECT * FROM system.schema_keyspaces WHERE keyspace_name = ?")
     statement[0] = "system"
     let res = await session.execute(statement)

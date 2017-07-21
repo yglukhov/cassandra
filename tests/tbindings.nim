@@ -5,17 +5,17 @@ import ../cassandra/linker_options
 var host = getEnv("CASSANDRA_HOST")
 if host.len == 0: host = "127.0.0.1"
 
-let cluster = cass_cluster_new();
-let session = cass_session_new();
+let cluster = cass_cluster_new()
+let session = cass_session_new()
 
-# Add contact points */
-discard cass_cluster_set_contact_points(cluster, host);
+# Add contact points
+discard cass_cluster_set_contact_points(cluster, host)
 
-# Provide the cluster object as configuration to connect the session */
-let connect_future = cass_session_connect(session, cluster);
+# Provide the cluster object as configuration to connect the session
+let connect_future = cass_session_connect(session, cluster)
 
-# This operation will block until the result is ready */
-var rc = cass_future_error_code(connect_future);
+# This operation will block until the result is ready
+var rc = cass_future_error_code(connect_future)
 if rc == CASS_OK:
     let statement = cass_statement_new("SELECT * FROM system.schema_keyspaces WHERE keyspace_name = ?", 1)
     discard cass_statement_bind_string(statement, 0, "system")
@@ -37,8 +37,6 @@ else:
     echo "Connect result: ", cass_error_desc(rc)
     doAssert(false)
 
-# Run queries... */
-
-cass_future_free(connect_future);
-cass_session_free(session);
-cass_cluster_free(cluster);
+cass_future_free(connect_future)
+cass_session_free(session)
+cass_cluster_free(cluster)
