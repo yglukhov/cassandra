@@ -39,3 +39,6 @@ let session = newSession()
 # Add contact points
 discard cass_cluster_set_contact_points(cluster.o, "127.0.0.1") # Note: .o is the low-level type
 ```
+# Dependencies
+- [libcassandra](https://github.com/datastax/cpp-driver) - most likely, you'll have to build it yourself
+- [libuv](https://github.com/libuv/libuv) - check out your package manager, most likely it will be there
