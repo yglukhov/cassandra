@@ -646,7 +646,7 @@ type
 ## 
 
 type
-  CassFutureCallback* = proc (future: ptr CassFuture; data: pointer)
+  CassFutureCallback* = proc (future: ptr CassFuture; data: pointer) {.cdecl.}
 
 ## *
 ##  Maximum size of a log message
@@ -682,7 +682,7 @@ type
 ## 
 
 type
-  CassLogCallback* = proc (message: ptr CassLogMessage; data: pointer)
+  CassLogCallback* = proc (message: ptr CassLogMessage; data: pointer) {.cdecl.}
 
 ## *
 ##  An authenticator.
@@ -705,7 +705,7 @@ type
 ## 
 
 type
-  CassAuthenticatorInitialCallback* = proc (auth: ptr CassAuthenticator; data: pointer)
+  CassAuthenticatorInitialCallback* = proc (auth: ptr CassAuthenticator; data: pointer) {.cdecl.}
 
 ## *
 ##  A callback used when an authentication challenge initiated
@@ -723,7 +723,7 @@ type
 
 type
   CassAuthenticatorChallengeCallback* = proc (auth: ptr CassAuthenticator;
-      data: pointer; token: cstring; token_size: csize)
+      data: pointer; token: cstring; token_size: csize) {.cdecl.}
 
 ## *
 ##  A callback used to indicate the success of the authentication
@@ -740,7 +740,7 @@ type
 
 type
   CassAuthenticatorSuccessCallback* = proc (auth: ptr CassAuthenticator;
-      data: pointer; token: cstring; token_size: csize)
+      data: pointer; token: cstring; token_size: csize) {.cdecl.}
 
 ## *
 ##  A callback used to cleanup resources that were acquired during
@@ -752,7 +752,7 @@ type
 ## 
 
 type
-  CassAuthenticatorCleanupCallback* = proc (auth: ptr CassAuthenticator; data: pointer)
+  CassAuthenticatorCleanupCallback* = proc (auth: ptr CassAuthenticator; data: pointer) {.cdecl.}
 
 ## *
 ##  A callback used to cleanup resources.
@@ -761,7 +761,7 @@ type
 ## 
 
 type
-  CassAuthenticatorDataCleanupCallback* = proc (data: pointer)
+  CassAuthenticatorDataCleanupCallback* = proc (data: pointer) {.cdecl.}
 
 ## *
 ##  Authenticator callbacks

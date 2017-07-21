@@ -16,3 +16,4 @@ export CASSANDRA_HOST=$(cat ./scylla_host)
 echo "CASSANDRA_HOST: $CASSANDRA_HOST"
 
 nim c -r tests/tbindings.nim
+nim c -r tests/tasync.nim

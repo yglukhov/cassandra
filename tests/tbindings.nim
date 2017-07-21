@@ -1,15 +1,6 @@
 import os
 import ../cassandra/bindings
-
-when defined(linux):
-    {.passL: "-lpthread".}
-    {.passL: "-lm".}
-    {.passL: "-lstdc++".}
-elif defined(macosx):
-    {.passL: "-lc++".}
-
-{.passL: "-lcassandra_static".}
-{.passL: "-luv".}
+import ../cassandra/linker_options
 
 var host = getEnv("CASSANDRA_HOST")
 if host.len == 0: host = "127.0.0.1"
