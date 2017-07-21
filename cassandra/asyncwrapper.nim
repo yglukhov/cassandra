@@ -18,6 +18,8 @@ wrapCassType(Session)
 wrapCassType(Cluster)
 wrapCassType(Statement)
 wrapCassType(Result)
+wrapCassType(TimestampGen)
+wrapCassType(RetryPolicy)
 
 type
     Row* = object
@@ -32,6 +34,8 @@ proc finalize(c: Cluster) = cass_cluster_free(c.o)
 proc finalize(c: Session) = cass_session_free(c.o)
 proc finalize(c: Result) = cass_result_free(c.o)
 proc finalize(c: Statement) = cass_statement_free(c.o)
+proc finalize(c: TimestampGen) = cass_timestamp_gen_free(c.o)
+proc finalize(c: RetryPolicy) = cass_retry_policy_free(c.o)
 
 proc newCluster*(): Cluster =
     result.new(finalize)
@@ -42,6 +46,14 @@ proc newSession*(): Session =
     result.o = cass_session_new()
 
 proc newResult(r: ptr CassResult): Result =
+    result.new(finalize)
+    result.o = r
+
+proc newTimestampGen(r: ptr CassTimestampGen): TimestampGen =
+    result.new(finalize)
+    result.o = r
+
+proc newRetryPolicy(r: ptr CassRetryPolicy): RetryPolicy =
     result.new(finalize)
     result.o = r
 
@@ -134,23 +146,170 @@ proc raiseCassException(err: CassError) =
     e.casErr = err
     raise e
 
-proc newStatement*(query: cstring, params_count: int): Statement =
+proc newStmt(query: string, params_count: int): Statement =
     result.new(finalize)
-    result.o = cass_statement_new(query, csize(params_count))
+    result.o = cass_statement_new_n(query, query.len, csize(params_count))
+
+proc newStatement*(query: string, params_count: int): Statement {.inline.} =
+    newStmt(query, params_count)
 
 proc newStatement*(query: static[string]): Statement {.inline.} =
     const numParams = query.count('?')
-    result = newStatement(query, numParams)
+    newStmt(query, numParams)
 
 proc newStatement*(query: string): Statement {.inline.} =
-    result = newStatement(query, query.count('?'))
+    newStmt(query, query.count('?'))
 
 template chck(e: untyped) =
     let err = e
     if err != CASS_OK: raiseCassException(err)
 
-proc setContactPoints*(cluster: Cluster, contact_points: cstring) {.inline.} =
-    chck cass_cluster_set_contact_points(cluster, contact_points)
+proc setContactPoints*(cluster: Cluster, hosts: string) {.inline.} =
+    chck cass_cluster_set_contact_points_n(cluster, hosts, hosts.len)
+
+proc setPort*(cluster: Cluster, port: int) {.inline.} =
+    chck cass_cluster_set_port(cluster, cint(port))
+
+proc setNumThreadsIO*(cluster: Cluster, num_threads: int) {.inline.} =
+    chck cass_cluster_set_num_threads_io(cluster, cuint(num_threads))
+
+proc setQueueSizeIO*(cluster: Cluster, queue_size: int) {.inline.} =
+    chck cass_cluster_set_queue_size_io(cluster, cuint(queue_size))
+
+proc setQueueSizeEvent*(cluster: Cluster, queue_size: int) {.inline.} =
+    chck cass_cluster_set_queue_size_event(cluster, cuint(queue_size))
+
+proc setQueueSizeLog*(cluster: Cluster, queue_size: int) {.inline.} =
+    chck cass_cluster_set_queue_size_log(cluster, cuint(queue_size))
+
+proc setCoreConnectionsPerHost*(cluster: Cluster, num_connections: int) {.inline.} =
+    chck cass_cluster_set_core_connections_per_host(cluster, cuint(num_connections))
+
+proc setMaxConnectionsPerHost*(cluster: Cluster, num_connections: int) {.inline.} =
+    chck cass_cluster_set_max_connections_per_host(cluster, cuint(num_connections))
+
+proc setReconnectWaitTime*(cluster: Cluster, wait_time: int) {.inline.} =
+    cass_cluster_set_reconnect_wait_time(cluster, cuint(wait_time))
+
+proc setMaxConcurrentCreation*(cluster: Cluster, num_connections: int) {.inline.} =
+    chck cass_cluster_set_max_concurrent_creation(cluster, cuint(num_connections))
+
+proc setMaxConcurrentRequestsThreshold*(cluster: Cluster, num_requests: int) {.inline.} =
+    chck cass_cluster_set_max_concurrent_requests_threshold(cluster, cuint(num_requests))
+
+proc setMaxRequestsPerFlush*(cluster: Cluster, num_requests: int) {.inline.} =
+    chck cass_cluster_set_max_requests_per_flush(cluster, cuint(num_requests))
+
+proc setWriteBytesHighWaterMark*(cluster: Cluster, num_bytes: int) {.inline.} =
+    chck cass_cluster_set_write_bytes_high_water_mark(cluster, cuint(num_bytes))
+
+proc setWriteBytesLowWaterMark*(cluster: Cluster, num_bytes: int) {.inline.} =
+    chck cass_cluster_set_write_bytes_low_water_mark(cluster, cuint(num_bytes))
+
+proc setPendingRequestsHighWaterMark*(cluster: Cluster, num_bytes: int) {.inline.} =
+    chck cass_cluster_set_pending_requests_high_water_mark(cluster, cuint(num_bytes))
+
+proc setPendingRequestsLowWaterMark*(cluster: Cluster, num_bytes: int) {.inline.} =
+    chck cass_cluster_set_pending_requests_low_water_mark(cluster, cuint(num_bytes))
+
+proc setConnectTimeout*(cluster: Cluster, timeout_ms: int) {.inline.} =
+    cass_cluster_set_connect_timeout(cluster, cuint(timeout_ms))
+
+proc setRequestTimeout*(cluster: Cluster, timeout_ms: int) {.inline.} =
+    cass_cluster_set_request_timeout(cluster, cuint(timeout_ms))
+
+proc setResolveTimeout*(cluster: Cluster, timeout_ms: int) {.inline.} =
+    cass_cluster_set_resolve_timeout(cluster, cuint(timeout_ms))
+
+proc setCredentials*(cluster: Cluster, username, password: string) {.inline.} =
+    cass_cluster_set_credentials_n(cluster, username, username.len, password, password.len)
+
+proc setLoadBalanceRoundRobin*(cluster: Cluster) {.inline.} =
+    cass_cluster_set_load_balance_round_robin(cluster)
+
+proc setLoadBalanceDCAware*(cluster: Cluster, local_dc: string; used_hosts_per_remote_dc: int;
+        allow_remote_dcs_for_local_cl: bool) {.inline.} =
+    chck cass_cluster_set_load_balance_dc_aware_n(cluster, local_dc, local_dc.len,
+        cuint(used_hosts_per_remote_dc), cass_bool_t(allow_remote_dcs_for_local_cl))
+
+proc setTokenAwareRouting*(cluster: Cluster, enabled: bool) {.inline.} =
+    cass_cluster_set_token_aware_routing(cluster, cass_bool_t(enabled))
+
+proc setLatencyAwareRouting*(cluster: Cluster, enabled: bool) {.inline.} =
+    cass_cluster_set_latency_aware_routing(cluster, cass_bool_t(enabled))
+
+proc setLatencyAwareRoutingSettings*(cluster: Cluster, exclusion_threshold: float;
+        scale_ms, retry_period_ms, update_rate_ms, min_measured: uint64) {.inline.} =
+    cass_cluster_set_latency_aware_routing_settings(cluster, exclusion_threshold,
+        scale_ms, retry_period_ms, update_rate_ms, min_measured)
+
+proc setWhitelistFiltering*(cluster: Cluster, hosts: string) {.inline.} =
+    cass_cluster_set_whitelist_filtering_n(cluster, hosts, hosts.len)
+
+proc setBlacklistFiltering*(cluster: Cluster, hosts: string) {.inline.} =
+    cass_cluster_set_blacklist_filtering_n(cluster, hosts, hosts.len)
+
+proc setWhitelistDCFiltering*(cluster: Cluster, dcs: string) {.inline.} =
+    cass_cluster_set_whitelist_dc_filtering_n(cluster, dcs, dcs.len)
+
+proc setBlacklistDCFiltering*(cluster: Cluster, dcs: string) {.inline.} =
+    cass_cluster_set_blacklist_dc_filtering_n(cluster, dcs, dcs.len)
+
+proc setTCPNodelay*(cluster: Cluster, enabled: bool) {.inline.} =
+    cass_cluster_set_tcp_nodelay(cluster, cass_bool_t(enabled))
+
+proc setTCPKeepalive*(cluster: Cluster, enabled: bool, delay_secs: int) {.inline.} =
+    cass_cluster_set_tcp_keepalive(cluster, cass_bool_t(enabled), cuint(delay_secs))
+
+proc setTimestampGen*(cluster: Cluster, timestamp_gen: TimestampGen) {.inline.} =
+    cass_cluster_set_timestamp_gen(cluster, timestamp_gen.o)
+
+proc setConnectionHearbeatInterval*(cluster: Cluster, interval_secs: int) {.inline.} =
+    cass_cluster_set_connection_heartbeat_interval(cluster, cuint(interval_secs))
+
+proc setConnectionIdleTimeout*(cluster: Cluster, timeout_secs: int) {.inline.} =
+    cass_cluster_set_connection_idle_timeout(cluster, cuint(timeout_secs))
+
+proc setRetryPolicy*(cluster: Cluster, policy: RetryPolicy) {.inline.} =
+    cass_cluster_set_retry_policy(cluster, policy)
+
+proc setUseSchema*(cluster: Cluster, enabled: bool) {.inline.} =
+    cass_cluster_set_use_schema(cluster, cass_bool_t(enabled))
+
+proc setUseHostnameResolution*(cluster: Cluster, enabled: bool) {.inline.} =
+    chck cass_cluster_set_use_hostname_resolution(cluster, cass_bool_t(enabled))
+
+proc setUseRandomizedContactPoints*(cluster: Cluster, enabled: bool) {.inline.} =
+    chck cass_cluster_set_use_randomized_contact_points(cluster, cass_bool_t(enabled))
+
+proc setConstantSpeculativeExecutionPolicy*(cluster: Cluster, constant_delay_ms: int64;
+        max_speculative_executions: int) {.inline.} =
+    chck cass_cluster_set_constant_speculative_execution_policy(cluster, constant_delay_ms,
+        cint(max_speculative_executions))
+
+proc setNoSpeculativeExecutionPolicy*(cluster: Cluster) {.inline.} =
+    chck cass_cluster_set_no_speculative_execution_policy(cluster)
+
+proc newTimestampGenServerSide*(): TimestampGen {.inline.} =
+    newTimestampGen(cass_timestamp_gen_server_side_new())
+
+proc newTimestampGenMonotonic*(): TimestampGen {.inline.} =
+    newTimestampGen(cass_timestamp_gen_monotonic_new())
+
+proc newTimestampGenMonotonic*(warning_threshold_us, warning_interval_ms: int64): TimestampGen {.inline.} =
+    newTimestampGen(cass_timestamp_gen_monotonic_new_with_settings(warning_threshold_us, warning_interval_ms))
+
+proc newRetryPolicyDefault*(): RetryPolicy {.inline.} =
+    newRetryPolicy(cass_retry_policy_default_new())
+
+proc newRetryPolicyDowngradingConsistency*(): RetryPolicy {.inline.} =
+    newRetryPolicy(cass_retry_policy_downgrading_consistency_new())
+
+proc newRetryPolicyFallthrough*(): RetryPolicy {.inline.} =
+    newRetryPolicy(cass_retry_policy_fallthrough_new())
+
+proc newRetryPolicyLogging*(child: RetryPolicy): RetryPolicy {.inline.} =
+    newRetryPolicy(cass_retry_policy_logging_new(child))
 
 proc connect*(session: Session, cluster: Cluster): Future[Result] {.inline.} =
     result.make(cass_session_connect(session, cluster), session, cluster)
@@ -158,11 +317,65 @@ proc connect*(session: Session, cluster: Cluster): Future[Result] {.inline.} =
 proc execute*(session: Session, statement: Statement): Future[Result] {.inline.} =
     result.make(cass_session_execute(session, statement), session, statement)
 
+proc bindParam*(statement: Statement, idx: int, v: int8) {.inline.} =
+    chck cass_statement_bind_int8(statement, csize(idx), v)
+
+proc bindParam*(statement: Statement, name: string, v: int8) {.inline.} =
+    chck cass_statement_bind_int8_by_name_n(statement, name, name.len, v)
+
+proc bindParam*(statement: Statement, idx: int, v: int16) {.inline.} =
+    chck cass_statement_bind_int16(statement, csize(idx), v)
+
+proc bindParam*(statement: Statement, name: string, v: int16) {.inline.} =
+    chck cass_statement_bind_int16_by_name_n(statement, name, name.len, v)
+
+proc bindParam*(statement: Statement, idx: int, v: int32) {.inline.} =
+    chck cass_statement_bind_int32(statement, csize(idx), v)
+
+proc bindParam*(statement: Statement, name: string, v: int32) {.inline.} =
+    chck cass_statement_bind_int32_by_name_n(statement, name, name.len, v)
+
+proc bindParam*(statement: Statement, idx: int, v: uint32) {.inline.} =
+    chck cass_statement_bind_uint32(statement, csize(idx), v)
+
+proc bindParam*(statement: Statement, name: string, v: uint32) {.inline.} =
+    chck cass_statement_bind_uint32_by_name_n(statement, name, name.len, v)
+
+proc bindParam*(statement: Statement, idx: int, v: int64) {.inline.} =
+    chck cass_statement_bind_int64(statement, csize(idx), v)
+
+proc bindParam*(statement: Statement, name: string, v: int64) {.inline.} =
+    chck cass_statement_bind_int64_by_name_n(statement, name, name.len, v)
+
+proc bindParam*(statement: Statement, idx: int, v: float32) {.inline.} =
+    chck cass_statement_bind_float(statement, csize(idx), v)
+
+proc bindParam*(statement: Statement, name: string, v: float32) {.inline.} =
+    chck cass_statement_bind_float_by_name_n(statement, name, name.len, v)
+
+proc bindParam*(statement: Statement, idx: int, v: float64) {.inline.} =
+    chck cass_statement_bind_double(statement, csize(idx), v)
+
+proc bindParam*(statement: Statement, name: string, v: float64) {.inline.} =
+    chck cass_statement_bind_double_by_name_n(statement, name, name.len, v)
+
+proc bindParam*(statement: Statement, idx: int, v: bool) {.inline.} =
+    chck cass_statement_bind_bool(statement, csize(idx), cass_bool_t(v))
+
+proc bindParam*(statement: Statement, name: string, v: bool) {.inline.} =
+    chck cass_statement_bind_bool_by_name_n(statement, name, name.len, cass_bool_t(v))
+
 proc bindParam*(statement: Statement, idx: int, v: string) {.inline.} =
-    chck cass_statement_bind_string(statement, csize(idx), v)
+    chck cass_statement_bind_string_n(statement, csize(idx), v, v.len)
+
+proc bindParam*(statement: Statement, name, v: string) {.inline.} =
+    chck cass_statement_bind_string_by_name_n(statement, name, name.len, v, v.len)
 
 template `[]=`*[T](statement: Statement, idx: int, v: T) =
     statement.bindParam(idx, v)
+
+template `[]=`*[T](statement: Statement, name: string, v: T) =
+    statement.bindParam(name, v)
 
 proc firstRow*(r: Result): Row {.inline.} =
     result.o = cass_result_first_row(r)
@@ -172,8 +385,8 @@ type ColumnsCollection = distinct Row
 
 template columns*(r: Row): ColumnsCollection = ColumnsCollection(r)
 
-proc `[]`*(cc: ColumnsCollection, name: cstring): Value {.inline.} =
-    result.o = cass_row_get_column_by_name(Row(cc).o, name)
+proc `[]`*(cc: ColumnsCollection, name: string): Value {.inline.} =
+    result.o = cass_row_get_column_by_name_n(Row(cc).o, name, name.len)
     result.gcHold = Row(cc).gcHold
 
 proc `[]`*(cc: ColumnsCollection, idx: int): Value {.inline.} =
