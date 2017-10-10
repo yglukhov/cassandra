@@ -15,12 +15,12 @@ proc test() {.async.} =
     discard await session.connect(cluster)
     echo "Connected"
 
-    let statement = newStatement("SELECT * FROM system.schema_keyspaces WHERE keyspace_name = ?")
+    let statement = newStatement("select * from system_schema.keyspaces where keyspace_name = ?")
     statement[0] = "system"
     let res = await session.execute(statement)
-    let val = res.firstRow.columns["strategy_class"]
-    let cl = val.string
-    echo "result: ", val
-    assert(cl == "org.apache.cassandra.locator.LocalStrategy")
+    let val = res.firstRow.columns["replication"]
+    let cl = val.getMapValue("class").string
+    echo "result: ", cl
+    doAssert(cl == "org.apache.cassandra.locator.LocalStrategy")
 
 waitFor test()

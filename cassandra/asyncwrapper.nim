@@ -98,7 +98,11 @@ proc dispatch_cas_future_main_thread(data: pointer) {.inline.} =
 
     let rc = cass_future_error_code(casF)
     if rc != CASS_OK:
-        let e = newException(CassandraException, "future exception")
+        var cmsg: cstring
+        var sz: csize
+        cass_future_error_message(casF, cast[cstringArray](addr cmsg), addr sz)
+        let msg = $cmsg
+        let e = newException(CassandraException, "future exception: " & msg)
         e.casErr = rc
         cass_future_free(casF)
         f.fail(e)
@@ -394,6 +398,20 @@ proc `[]`*(cc: ColumnsCollection, idx: int): Value {.inline.} =
     result.gcHold = Row(cc).gcHold
 
 proc kind*(v: Value): CassValueType {.inline.} = cass_value_type(v.o)
+
+proc getMapValue*(m: Value, key: string): Value =
+    let it = cass_iterator_from_map(m.o)
+    while cass_iterator_next(it) != cass_false:
+        let k = cass_iterator_get_map_key(it)
+        var c: cstring
+        var sz: csize
+
+        if cass_value_get_string(k, cast[cstringArray](addr c), addr sz) == CASS_OK:
+            if key == c:
+                result.o = cass_iterator_get_map_value(it)
+                result.gcHold = m.gcHold
+                break
+    cass_iterator_free(it)
 
 converter toString*(v: Value): string =
     var c: cstring

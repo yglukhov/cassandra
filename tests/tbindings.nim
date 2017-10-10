@@ -17,19 +17,15 @@ let connect_future = cass_session_connect(session, cluster)
 # This operation will block until the result is ready
 var rc = cass_future_error_code(connect_future)
 if rc == CASS_OK:
-    let statement = cass_statement_new("SELECT * FROM system.schema_keyspaces WHERE keyspace_name = ?", 1)
+    let statement = cass_statement_new("select * from system_schema.keyspaces where keyspace_name = ?", 1)
     discard cass_statement_bind_string(statement, 0, "system")
     let queryFuture = cass_session_execute(session, statement)
     rc = cass_future_error_code(queryFuture)
     if rc == CASS_OK:
         let res = cass_future_get_result(queryFuture)
         let row = cass_result_first_row(res)
-        let val = cass_row_get_column_by_name(row, "strategy_class")
-        var cl: cstring
-        var sz: csize
-        discard cass_value_get_string(val, cast[cstringArray](addr cl), addr sz)
-        echo "result: ", cl
-        assert($cl == "org.apache.cassandra.locator.LocalStrategy")
+        let val = cass_row_get_column_by_name(row, "replication")
+        doAssert(cass_value_type(val) == CASS_VALUE_TYPE_MAP)
     else:
         echo "Select result: ", cass_error_desc(rc)
         doAssert(false)
