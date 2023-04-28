@@ -723,7 +723,7 @@ type
 
 type
   CassAuthenticatorChallengeCallback* = proc (auth: ptr CassAuthenticator;
-      data: pointer; token: cstring; token_size: csize) {.cdecl.}
+      data: pointer; token: cstring; token_size: csize_t) {.cdecl.}
 
 ## *
 ##  A callback used to indicate the success of the authentication
@@ -740,7 +740,7 @@ type
 
 type
   CassAuthenticatorSuccessCallback* = proc (auth: ptr CassAuthenticator;
-      data: pointer; token: cstring; token_size: csize) {.cdecl.}
+      data: pointer; token: cstring; token_size: csize_t) {.cdecl.}
 
 ## *
 ##  A callback used to cleanup resources that were acquired during
@@ -837,7 +837,7 @@ proc cass_cluster_set_contact_points*(cluster: ptr CassCluster;
 
 proc cass_cluster_set_contact_points_n*(cluster: ptr CassCluster;
                                        contact_points: cstring;
-                                       contact_points_length: csize): CassError
+                                       contact_points_length: csize_t): CassError
 ## *
 ##  Sets the port.
 ## 
@@ -1187,8 +1187,8 @@ proc cass_cluster_set_credentials*(cluster: ptr CassCluster; username: cstring;
 ## 
 
 proc cass_cluster_set_credentials_n*(cluster: ptr CassCluster; username: cstring;
-                                    username_length: csize; password: cstring;
-                                    password_length: csize)
+                                    username_length: csize_t; password: cstring;
+                                    password_length: csize_t)
 ## *
 ##  Configures the cluster to use round-robin load balancing.
 ## 
@@ -1244,7 +1244,7 @@ proc cass_cluster_set_load_balance_dc_aware*(cluster: ptr CassCluster;
 ## 
 
 proc cass_cluster_set_load_balance_dc_aware_n*(cluster: ptr CassCluster;
-    local_dc: cstring; local_dc_length: csize; used_hosts_per_remote_dc: cuint;
+    local_dc: cstring; local_dc_length: csize_t; used_hosts_per_remote_dc: cuint;
     allow_remote_dcs_for_local_cl: cass_bool_t): CassError
 ## *
 ##  Configures the cluster to use token-aware request routing or not.
@@ -1352,7 +1352,7 @@ proc cass_cluster_set_whitelist_filtering*(cluster: ptr CassCluster; hosts: cstr
 ## 
 
 proc cass_cluster_set_whitelist_filtering_n*(cluster: ptr CassCluster;
-    hosts: cstring; hosts_length: csize)
+    hosts: cstring; hosts_length: csize_t)
 ## *
 ##  Sets/Appends blacklist hosts. The first call sets the blacklist hosts and
 ##  any subsequent calls appends additional hosts. Passing an empty string will
@@ -1390,7 +1390,7 @@ proc cass_cluster_set_blacklist_filtering*(cluster: ptr CassCluster; hosts: cstr
 ## 
 
 proc cass_cluster_set_blacklist_filtering_n*(cluster: ptr CassCluster;
-    hosts: cstring; hosts_length: csize)
+    hosts: cstring; hosts_length: csize_t)
 ## *
 ##  Same as cass_cluster_set_whitelist_filtering(), but whitelist all hosts of a dc
 ## 
@@ -1420,7 +1420,7 @@ proc cass_cluster_set_whitelist_dc_filtering*(cluster: ptr CassCluster; dcs: cst
 ## 
 
 proc cass_cluster_set_whitelist_dc_filtering_n*(cluster: ptr CassCluster;
-    dcs: cstring; dcs_length: csize)
+    dcs: cstring; dcs_length: csize_t)
 ## *
 ##  Same as cass_cluster_set_blacklist_filtering(), but blacklist all hosts of a dc
 ## 
@@ -1450,7 +1450,7 @@ proc cass_cluster_set_blacklist_dc_filtering*(cluster: ptr CassCluster; dcs: cst
 ## 
 
 proc cass_cluster_set_blacklist_dc_filtering_n*(cluster: ptr CassCluster;
-    dcs: cstring; dcs_length: csize)
+    dcs: cstring; dcs_length: csize_t)
 ## *
 ##  Enable/Disable Nagle's algorithm on connections.
 ## 
@@ -1707,7 +1707,7 @@ proc cass_session_connect_keyspace*(session: ptr CassSession;
 
 proc cass_session_connect_keyspace_n*(session: ptr CassSession;
                                      cluster: ptr CassCluster; keyspace: cstring;
-                                     keyspace_length: csize): ptr CassFuture
+                                     keyspace_length: csize_t): ptr CassFuture
 ## *
 ##  Closes the session instance, outputs a close future which can
 ##  be used to determine when the session has been terminated. This allows
@@ -1749,7 +1749,7 @@ proc cass_session_prepare*(session: ptr CassSession; query: cstring): ptr CassFu
 ## 
 
 proc cass_session_prepare_n*(session: ptr CassSession; query: cstring;
-                            query_length: csize): ptr CassFuture
+                            query_length: csize_t): ptr CassFuture
 ## *
 ##  Execute a query or bound statement.
 ## 
@@ -1867,7 +1867,7 @@ proc cass_schema_meta_keyspace_by_name*(schema_meta: ptr CassSchemaMeta;
 ## 
 
 proc cass_schema_meta_keyspace_by_name_n*(schema_meta: ptr CassSchemaMeta;
-    keyspace: cstring; keyspace_length: csize): ptr CassKeyspaceMeta
+    keyspace: cstring; keyspace_length: csize_t): ptr CassKeyspaceMeta
 ## *
 ##  Gets the name of the keyspace.
 ## 
@@ -1879,7 +1879,7 @@ proc cass_schema_meta_keyspace_by_name_n*(schema_meta: ptr CassSchemaMeta;
 ## 
 
 proc cass_keyspace_meta_name*(keyspace_meta: ptr CassKeyspaceMeta;
-                             name: cstringArray; name_length: ptr csize)
+                             name: cstringArray; name_length: ptr csize_t)
 ## *
 ##  Gets the table metadata for the provided table name.
 ## 
@@ -1908,7 +1908,7 @@ proc cass_keyspace_meta_table_by_name*(keyspace_meta: ptr CassKeyspaceMeta;
 ## 
 
 proc cass_keyspace_meta_table_by_name_n*(keyspace_meta: ptr CassKeyspaceMeta;
-                                        table: cstring; table_length: csize): ptr CassTableMeta
+                                        table: cstring; table_length: csize_t): ptr CassTableMeta
 ## *
 ##  Gets the materialized view metadata for the provided view name.
 ## 
@@ -1941,7 +1941,7 @@ proc cass_keyspace_meta_materialized_view_by_name*(
 ## 
 
 proc cass_keyspace_meta_materialized_view_by_name_n*(
-    keyspace_meta: ptr CassKeyspaceMeta; view: cstring; view_length: csize): ptr CassMaterializedViewMeta
+    keyspace_meta: ptr CassKeyspaceMeta; view: cstring; view_length: csize_t): ptr CassMaterializedViewMeta
 ## *
 ##  Gets the data type for the provided type name.
 ## 
@@ -1974,7 +1974,7 @@ proc cass_keyspace_meta_user_type_by_name*(keyspace_meta: ptr CassKeyspaceMeta;
 ## 
 
 proc cass_keyspace_meta_user_type_by_name_n*(keyspace_meta: ptr CassKeyspaceMeta;
-    `type`: cstring; type_length: csize): ptr CassDataType
+    `type`: cstring; type_length: csize_t): ptr CassDataType
 ## *
 ##  Gets the function metadata for the provided function name.
 ## 
@@ -2011,7 +2011,7 @@ proc cass_keyspace_meta_function_by_name*(keyspace_meta: ptr CassKeyspaceMeta;
 ## 
 
 proc cass_keyspace_meta_function_by_name_n*(keyspace_meta: ptr CassKeyspaceMeta;
-    name: cstring; name_length: csize; arguments: cstring; arguments_length: csize): ptr CassFunctionMeta
+    name: cstring; name_length: csize_t; arguments: cstring; arguments_length: csize_t): ptr CassFunctionMeta
 ## *
 ##  Gets the aggregate metadata for the provided aggregate name.
 ## 
@@ -2048,7 +2048,7 @@ proc cass_keyspace_meta_aggregate_by_name*(keyspace_meta: ptr CassKeyspaceMeta;
 ## 
 
 proc cass_keyspace_meta_aggregate_by_name_n*(keyspace_meta: ptr CassKeyspaceMeta;
-    name: cstring; name_length: csize; arguments: cstring; arguments_length: csize): ptr CassAggregateMeta
+    name: cstring; name_length: csize_t; arguments: cstring; arguments_length: csize_t): ptr CassAggregateMeta
 ## *
 ##  Gets a metadata field for the provided name. Metadata fields allow direct
 ##  access to the column data found in the underlying "keyspaces" metadata table.
@@ -2077,7 +2077,7 @@ proc cass_keyspace_meta_field_by_name*(keyspace_meta: ptr CassKeyspaceMeta;
 ## 
 
 proc cass_keyspace_meta_field_by_name_n*(keyspace_meta: ptr CassKeyspaceMeta;
-                                        name: cstring; name_length: csize): ptr CassValue
+                                        name: cstring; name_length: csize_t): ptr CassValue
 ## *
 ##  Gets the name of the table.
 ## 
@@ -2089,7 +2089,7 @@ proc cass_keyspace_meta_field_by_name_n*(keyspace_meta: ptr CassKeyspaceMeta;
 ## 
 
 proc cass_table_meta_name*(table_meta: ptr CassTableMeta; name: cstringArray;
-                          name_length: ptr csize)
+                          name_length: ptr csize_t)
 ## *
 ##  Gets the column metadata for the provided column name.
 ## 
@@ -2117,7 +2117,7 @@ proc cass_table_meta_column_by_name*(table_meta: ptr CassTableMeta; column: cstr
 ## 
 
 proc cass_table_meta_column_by_name_n*(table_meta: ptr CassTableMeta;
-                                      column: cstring; column_length: csize): ptr CassColumnMeta
+                                      column: cstring; column_length: csize_t): ptr CassColumnMeta
 ## *
 ##  Gets the total number of columns for the table.
 ## 
@@ -2127,7 +2127,7 @@ proc cass_table_meta_column_by_name_n*(table_meta: ptr CassTableMeta;
 ##  @return The total column count.
 ## 
 
-proc cass_table_meta_column_count*(table_meta: ptr CassTableMeta): csize
+proc cass_table_meta_column_count*(table_meta: ptr CassTableMeta): csize_t
 ## *
 ##  Gets the column metadata for the provided index.
 ## 
@@ -2138,7 +2138,7 @@ proc cass_table_meta_column_count*(table_meta: ptr CassTableMeta): csize
 ##  @return The metadata for a column. NULL returned if the index is out of range.
 ## 
 
-proc cass_table_meta_column*(table_meta: ptr CassTableMeta; index: csize): ptr CassColumnMeta
+proc cass_table_meta_column*(table_meta: ptr CassTableMeta; index: csize_t): ptr CassColumnMeta
 ## *
 ##  Gets the index metadata for the provided index name.
 ## 
@@ -2166,7 +2166,7 @@ proc cass_table_meta_index_by_name*(table_meta: ptr CassTableMeta; index: cstrin
 ## 
 
 proc cass_table_meta_index_by_name_n*(table_meta: ptr CassTableMeta; index: cstring;
-                                     index_length: csize): ptr CassIndexMeta
+                                     index_length: csize_t): ptr CassIndexMeta
 ## *
 ##  Gets the total number of indexes for the table.
 ## 
@@ -2176,7 +2176,7 @@ proc cass_table_meta_index_by_name_n*(table_meta: ptr CassTableMeta; index: cstr
 ##  @return The total index count.
 ## 
 
-proc cass_table_meta_index_count*(table_meta: ptr CassTableMeta): csize
+proc cass_table_meta_index_count*(table_meta: ptr CassTableMeta): csize_t
 ## *
 ##  Gets the index metadata for the provided index.
 ## 
@@ -2187,7 +2187,7 @@ proc cass_table_meta_index_count*(table_meta: ptr CassTableMeta): csize
 ##  @return The metadata for a index. NULL returned if the index is out of range.
 ## 
 
-proc cass_table_meta_index*(table_meta: ptr CassTableMeta; index: csize): ptr CassIndexMeta
+proc cass_table_meta_index*(table_meta: ptr CassTableMeta; index: csize_t): ptr CassIndexMeta
 ## *
 ##  Gets the materialized view metadata for the provided view name.
 ## 
@@ -2220,7 +2220,7 @@ proc cass_table_meta_materialized_view_by_name*(table_meta: ptr CassTableMeta;
 ## 
 
 proc cass_table_meta_materialized_view_by_name_n*(table_meta: ptr CassTableMeta;
-    view: cstring; view_length: csize): ptr CassMaterializedViewMeta
+    view: cstring; view_length: csize_t): ptr CassMaterializedViewMeta
 ## *
 ##  Gets the total number of views for the table.
 ## 
@@ -2232,7 +2232,7 @@ proc cass_table_meta_materialized_view_by_name_n*(table_meta: ptr CassTableMeta;
 ##  @return The total view count.
 ## 
 
-proc cass_table_meta_materialized_view_count*(table_meta: ptr CassTableMeta): csize
+proc cass_table_meta_materialized_view_count*(table_meta: ptr CassTableMeta): csize_t
 ## *
 ##  Gets the materialized view metadata for the provided index.
 ## 
@@ -2245,7 +2245,7 @@ proc cass_table_meta_materialized_view_count*(table_meta: ptr CassTableMeta): cs
 ##  @return The metadata for a view. NULL returned if the index is out of range.
 ## 
 
-proc cass_table_meta_materialized_view*(table_meta: ptr CassTableMeta; index: csize): ptr CassMaterializedViewMeta
+proc cass_table_meta_materialized_view*(table_meta: ptr CassTableMeta; index: csize_t): ptr CassMaterializedViewMeta
 ## *
 ##  Gets the number of columns for the table's partition key.
 ## 
@@ -2255,7 +2255,7 @@ proc cass_table_meta_materialized_view*(table_meta: ptr CassTableMeta; index: cs
 ##  @return The count for the number of columns in the partition key.
 ## 
 
-proc cass_table_meta_partition_key_count*(table_meta: ptr CassTableMeta): csize
+proc cass_table_meta_partition_key_count*(table_meta: ptr CassTableMeta): csize_t
 ## *
 ##  Gets the partition key column metadata for the provided index.
 ## 
@@ -2268,7 +2268,7 @@ proc cass_table_meta_partition_key_count*(table_meta: ptr CassTableMeta): csize
 ##  @see cass_table_meta_partition_key_count()
 ## 
 
-proc cass_table_meta_partition_key*(table_meta: ptr CassTableMeta; index: csize): ptr CassColumnMeta
+proc cass_table_meta_partition_key*(table_meta: ptr CassTableMeta; index: csize_t): ptr CassColumnMeta
 ## *
 ##  Gets the number of columns for the table's clustering key.
 ## 
@@ -2278,7 +2278,7 @@ proc cass_table_meta_partition_key*(table_meta: ptr CassTableMeta; index: csize)
 ##  @return The count for the number of columns in the clustering key.
 ## 
 
-proc cass_table_meta_clustering_key_count*(table_meta: ptr CassTableMeta): csize
+proc cass_table_meta_clustering_key_count*(table_meta: ptr CassTableMeta): csize_t
 ## *
 ##  Gets the clustering key column metadata for the provided index.
 ## 
@@ -2291,7 +2291,7 @@ proc cass_table_meta_clustering_key_count*(table_meta: ptr CassTableMeta): csize
 ##  @see cass_table_meta_clustering_key_count()
 ## 
 
-proc cass_table_meta_clustering_key*(table_meta: ptr CassTableMeta; index: csize): ptr CassColumnMeta
+proc cass_table_meta_clustering_key*(table_meta: ptr CassTableMeta; index: csize_t): ptr CassColumnMeta
 ## *
 ##  Gets the clustering order column metadata for the provided index.
 ## 
@@ -2306,7 +2306,7 @@ proc cass_table_meta_clustering_key*(table_meta: ptr CassTableMeta; index: csize
 ## 
 
 proc cass_table_meta_clustering_key_order*(table_meta: ptr CassTableMeta;
-    index: csize): CassClusteringOrder
+    index: csize_t): CassClusteringOrder
 ## *
 ##  Gets a metadata field for the provided name. Metadata fields allow direct
 ##  access to the column data found in the underlying "tables" metadata table.
@@ -2334,7 +2334,7 @@ proc cass_table_meta_field_by_name*(table_meta: ptr CassTableMeta; name: cstring
 ## 
 
 proc cass_table_meta_field_by_name_n*(table_meta: ptr CassTableMeta; name: cstring;
-                                     name_length: csize): ptr CassValue
+                                     name_length: csize_t): ptr CassValue
 ## *
 ##  Gets the column metadata for the provided column name.
 ## 
@@ -2367,7 +2367,7 @@ proc cass_materialized_view_meta_column_by_name*(
 ## 
 
 proc cass_materialized_view_meta_column_by_name_n*(
-    view_meta: ptr CassMaterializedViewMeta; column: cstring; column_length: csize): ptr CassColumnMeta
+    view_meta: ptr CassMaterializedViewMeta; column: cstring; column_length: csize_t): ptr CassColumnMeta
 ## *
 ##  Gets the name of the view.
 ## 
@@ -2381,7 +2381,7 @@ proc cass_materialized_view_meta_column_by_name_n*(
 ## 
 
 proc cass_materialized_view_meta_name*(view_meta: ptr CassMaterializedViewMeta;
-                                      name: cstringArray; name_length: ptr csize)
+                                      name: cstringArray; name_length: ptr csize_t)
 ## *
 ##  Gets the base table of the view.
 ## 
@@ -2408,7 +2408,7 @@ proc cass_materialized_view_meta_base_table*(
 ## 
 
 proc cass_materialized_view_meta_column_count*(
-    view_meta: ptr CassMaterializedViewMeta): csize
+    view_meta: ptr CassMaterializedViewMeta): csize_t
 ## *
 ##  Gets the column metadata for the provided index.
 ## 
@@ -2422,7 +2422,7 @@ proc cass_materialized_view_meta_column_count*(
 ## 
 
 proc cass_materialized_view_meta_column*(view_meta: ptr CassMaterializedViewMeta;
-                                        index: csize): ptr CassColumnMeta
+                                        index: csize_t): ptr CassColumnMeta
 ## *
 ##  Gets the number of columns for the view's partition key.
 ## 
@@ -2435,7 +2435,7 @@ proc cass_materialized_view_meta_column*(view_meta: ptr CassMaterializedViewMeta
 ## 
 
 proc cass_materialized_view_meta_partition_key_count*(
-    view_meta: ptr CassMaterializedViewMeta): csize
+    view_meta: ptr CassMaterializedViewMeta): csize_t
 ## *
 ##  Gets the partition key column metadata for the provided index.
 ## 
@@ -2449,7 +2449,7 @@ proc cass_materialized_view_meta_partition_key_count*(
 ## 
 
 proc cass_materialized_view_meta_partition_key*(
-    view_meta: ptr CassMaterializedViewMeta; index: csize): ptr CassColumnMeta
+    view_meta: ptr CassMaterializedViewMeta; index: csize_t): ptr CassColumnMeta
 ## *
 ##  Gets the number of columns for the view's clustering key.
 ## 
@@ -2462,7 +2462,7 @@ proc cass_materialized_view_meta_partition_key*(
 ## 
 
 proc cass_materialized_view_meta_clustering_key_count*(
-    view_meta: ptr CassMaterializedViewMeta): csize
+    view_meta: ptr CassMaterializedViewMeta): csize_t
 ## *
 ##  Gets the clustering key column metadata for the provided index.
 ## 
@@ -2476,7 +2476,7 @@ proc cass_materialized_view_meta_clustering_key_count*(
 ## 
 
 proc cass_materialized_view_meta_clustering_key*(
-    view_meta: ptr CassMaterializedViewMeta; index: csize): ptr CassColumnMeta
+    view_meta: ptr CassMaterializedViewMeta; index: csize_t): ptr CassColumnMeta
 ## *
 ##  Gets the clustering order column metadata for the provided index.
 ## 
@@ -2491,7 +2491,7 @@ proc cass_materialized_view_meta_clustering_key*(
 ## 
 
 proc cass_materialized_view_meta_clustering_key_order*(
-    view_meta: ptr CassMaterializedViewMeta; index: csize): CassClusteringOrder
+    view_meta: ptr CassMaterializedViewMeta; index: csize_t): CassClusteringOrder
 ## *
 ##  Gets a metadata field for the provided name. Metadata fields allow direct
 ##  access to the column data found in the underlying "views" metadata view.
@@ -2524,7 +2524,7 @@ proc cass_materialized_view_meta_field_by_name*(
 ## 
 
 proc cass_materialized_view_meta_field_by_name_n*(
-    view_meta: ptr CassMaterializedViewMeta; name: cstring; name_length: csize): ptr CassValue
+    view_meta: ptr CassMaterializedViewMeta; name: cstring; name_length: csize_t): ptr CassValue
 ## *
 ##  Gets the name of the column.
 ## 
@@ -2536,7 +2536,7 @@ proc cass_materialized_view_meta_field_by_name_n*(
 ## 
 
 proc cass_column_meta_name*(column_meta: ptr CassColumnMeta; name: cstringArray;
-                           name_length: ptr csize)
+                           name_length: ptr csize_t)
 ## *
 ##  Gets the type of the column.
 ## 
@@ -2584,7 +2584,7 @@ proc cass_column_meta_field_by_name*(column_meta: ptr CassColumnMeta; name: cstr
 ## 
 
 proc cass_column_meta_field_by_name_n*(column_meta: ptr CassColumnMeta;
-                                      name: cstring; name_length: csize): ptr CassValue
+                                      name: cstring; name_length: csize_t): ptr CassValue
 ## *
 ##  Gets the name of the index.
 ## 
@@ -2596,7 +2596,7 @@ proc cass_column_meta_field_by_name_n*(column_meta: ptr CassColumnMeta;
 ## 
 
 proc cass_index_meta_name*(index_meta: ptr CassIndexMeta; name: cstringArray;
-                          name_length: ptr csize)
+                          name_length: ptr csize_t)
 ## *
 ##  Gets the type of the index.
 ## 
@@ -2618,7 +2618,7 @@ proc cass_index_meta_type*(index_meta: ptr CassIndexMeta): CassIndexType
 ## 
 
 proc cass_index_meta_target*(index_meta: ptr CassIndexMeta; target: cstringArray;
-                            target_length: ptr csize)
+                            target_length: ptr csize_t)
 ## *
 ##  Gets the options of the index.
 ## 
@@ -2656,7 +2656,7 @@ proc cass_index_meta_field_by_name*(index_meta: ptr CassIndexMeta; name: cstring
 ## 
 
 proc cass_index_meta_field_by_name_n*(index_meta: ptr CassIndexMeta; name: cstring;
-                                     name_length: csize): ptr CassValue
+                                     name_length: csize_t): ptr CassValue
 ## *
 ##  Gets the name of the function.
 ## 
@@ -2670,7 +2670,7 @@ proc cass_index_meta_field_by_name_n*(index_meta: ptr CassIndexMeta; name: cstri
 ## 
 
 proc cass_function_meta_name*(function_meta: ptr CassFunctionMeta;
-                             name: cstringArray; name_length: ptr csize)
+                             name: cstringArray; name_length: ptr csize_t)
 ## *
 ##  Gets the full name of the function. The full name includes the
 ##  function's name and the function's signature:
@@ -2687,7 +2687,7 @@ proc cass_function_meta_name*(function_meta: ptr CassFunctionMeta;
 
 proc cass_function_meta_full_name*(function_meta: ptr CassFunctionMeta;
                                   full_name: cstringArray;
-                                  full_name_length: ptr csize)
+                                  full_name_length: ptr csize_t)
 ## *
 ##  Gets the body of the function.
 ## 
@@ -2701,7 +2701,7 @@ proc cass_function_meta_full_name*(function_meta: ptr CassFunctionMeta;
 ## 
 
 proc cass_function_meta_body*(function_meta: ptr CassFunctionMeta;
-                             body: cstringArray; body_length: ptr csize)
+                             body: cstringArray; body_length: ptr csize_t)
 ## *
 ##  Gets the language of the function.
 ## 
@@ -2716,7 +2716,7 @@ proc cass_function_meta_body*(function_meta: ptr CassFunctionMeta;
 
 proc cass_function_meta_language*(function_meta: ptr CassFunctionMeta;
                                  language: cstringArray;
-                                 language_length: ptr csize)
+                                 language_length: ptr csize_t)
 ## *
 ##  Gets whether a function is called on "null".
 ## 
@@ -2740,7 +2740,7 @@ proc cass_function_meta_called_on_null_input*(function_meta: ptr CassFunctionMet
 ##  @return The number of arguments.
 ## 
 
-proc cass_function_meta_argument_count*(function_meta: ptr CassFunctionMeta): csize
+proc cass_function_meta_argument_count*(function_meta: ptr CassFunctionMeta): csize_t
 ## *
 ##  Gets the function's argument name and type for the provided index.
 ## 
@@ -2756,8 +2756,8 @@ proc cass_function_meta_argument_count*(function_meta: ptr CassFunctionMeta): cs
 ##  @return CASS_OK if successful, otherwise an error occurred
 ## 
 
-proc cass_function_meta_argument*(function_meta: ptr CassFunctionMeta; index: csize;
-                                 name: cstringArray; name_length: ptr csize;
+proc cass_function_meta_argument*(function_meta: ptr CassFunctionMeta; index: csize_t;
+                                 name: cstringArray; name_length: ptr csize_t;
                                  `type`: ptr ptr CassDataType): CassError
 ## *
 ##  Gets the function's argument and type for the provided name.
@@ -2790,7 +2790,7 @@ proc cass_function_meta_argument_type_by_name*(
 ## 
 
 proc cass_function_meta_argument_type_by_name_n*(
-    function_meta: ptr CassFunctionMeta; name: cstring; name_length: csize): ptr CassDataType
+    function_meta: ptr CassFunctionMeta; name: cstring; name_length: csize_t): ptr CassDataType
 ## *
 ##  Gets the return type of the function.
 ## 
@@ -2835,7 +2835,7 @@ proc cass_function_meta_field_by_name*(function_meta: ptr CassFunctionMeta;
 ## 
 
 proc cass_function_meta_field_by_name_n*(function_meta: ptr CassFunctionMeta;
-                                        name: cstring; name_length: csize): ptr CassValue
+                                        name: cstring; name_length: csize_t): ptr CassValue
 ## *
 ##  Gets the name of the aggregate.
 ## 
@@ -2849,7 +2849,7 @@ proc cass_function_meta_field_by_name_n*(function_meta: ptr CassFunctionMeta;
 ## 
 
 proc cass_aggregate_meta_name*(aggregate_meta: ptr CassAggregateMeta;
-                              name: cstringArray; name_length: ptr csize)
+                              name: cstringArray; name_length: ptr csize_t)
 ## *
 ##  Gets the full name of the aggregate. The full name includes the
 ##  aggregate's name and the aggregate's signature:
@@ -2866,7 +2866,7 @@ proc cass_aggregate_meta_name*(aggregate_meta: ptr CassAggregateMeta;
 
 proc cass_aggregate_meta_full_name*(aggregate_meta: ptr CassAggregateMeta;
                                    full_name: cstringArray;
-                                   full_name_length: ptr csize)
+                                   full_name_length: ptr csize_t)
 ## *
 ##  Gets the number of arguments this aggregate takes.
 ## 
@@ -2878,7 +2878,7 @@ proc cass_aggregate_meta_full_name*(aggregate_meta: ptr CassAggregateMeta;
 ##  @return The number of arguments.
 ## 
 
-proc cass_aggregate_meta_argument_count*(aggregate_meta: ptr CassAggregateMeta): csize
+proc cass_aggregate_meta_argument_count*(aggregate_meta: ptr CassAggregateMeta): csize_t
 ## *
 ##  Gets the aggregate's argument type for the provided index.
 ## 
@@ -2892,7 +2892,7 @@ proc cass_aggregate_meta_argument_count*(aggregate_meta: ptr CassAggregateMeta):
 ## 
 
 proc cass_aggregate_meta_argument_type*(aggregate_meta: ptr CassAggregateMeta;
-                                       index: csize): ptr CassDataType
+                                       index: csize_t): ptr CassDataType
 ## *
 ##  Gets the return type of the aggregate.
 ## 
@@ -2988,7 +2988,7 @@ proc cass_aggregate_meta_field_by_name*(aggregate_meta: ptr CassAggregateMeta;
 ## 
 
 proc cass_aggregate_meta_field_by_name_n*(aggregate_meta: ptr CassAggregateMeta;
-    name: cstring; name_length: csize): ptr CassValue
+    name: cstring; name_length: csize_t): ptr CassValue
 ## **********************************************************************************
 ## 
 ##  SSL
@@ -3070,7 +3070,7 @@ proc cass_ssl_add_trusted_cert*(ssl: ptr CassSsl; cert: cstring): CassError
 ##  @see cass_ssl_add_trusted_cert()
 ## 
 
-proc cass_ssl_add_trusted_cert_n*(ssl: ptr CassSsl; cert: cstring; cert_length: csize): CassError
+proc cass_ssl_add_trusted_cert_n*(ssl: ptr CassSsl; cert: cstring; cert_length: csize_t): CassError
 ## *
 ##  Sets verification performed on the peer's certificate.
 ## 
@@ -3122,7 +3122,7 @@ proc cass_ssl_set_cert*(ssl: ptr CassSsl; cert: cstring): CassError
 ##  @see cass_ssl_set_cert()
 ## 
 
-proc cass_ssl_set_cert_n*(ssl: ptr CassSsl; cert: cstring; cert_length: csize): CassError
+proc cass_ssl_set_cert_n*(ssl: ptr CassSsl; cert: cstring; cert_length: csize_t): CassError
 ## *
 ##  Set client-side private key. This is used to authenticate
 ##  the client on the server-side.
@@ -3152,8 +3152,8 @@ proc cass_ssl_set_private_key*(ssl: ptr CassSsl; key: cstring; password: cstring
 ##  @see cass_ssl_set_private_key()
 ## 
 
-proc cass_ssl_set_private_key_n*(ssl: ptr CassSsl; key: cstring; key_length: csize;
-                                password: cstring; password_length: csize): CassError
+proc cass_ssl_set_private_key_n*(ssl: ptr CassSsl; key: cstring; key_length: csize_t;
+                                password: cstring; password_length: csize_t): CassError
 ## **********************************************************************************
 ## 
 ##  Authenticator
@@ -3179,7 +3179,7 @@ proc cass_authenticator_address*(auth: ptr CassAuthenticator; address: ptr CassI
 ##  @return A null-terminated string.
 ## 
 
-proc cass_authenticator_hostname*(auth: ptr CassAuthenticator; length: ptr csize): cstring
+proc cass_authenticator_hostname*(auth: ptr CassAuthenticator; length: ptr csize_t): cstring
 ## *
 ##  Gets the class name for the server-side IAuthentication implementation.
 ## 
@@ -3190,7 +3190,7 @@ proc cass_authenticator_hostname*(auth: ptr CassAuthenticator; length: ptr csize
 ##  @return A null-terminated string.
 ## 
 
-proc cass_authenticator_class_name*(auth: ptr CassAuthenticator; length: ptr csize): cstring
+proc cass_authenticator_class_name*(auth: ptr CassAuthenticator; length: ptr csize_t): cstring
 ## *
 ##  Gets the user data created during the authenticator exchange. This
 ##  is set using cass_authenticator_set_exchange_data().
@@ -3228,7 +3228,7 @@ proc cass_authenticator_set_exchange_data*(auth: ptr CassAuthenticator;
 ##  @return A buffer to copy the response token.
 ## 
 
-proc cass_authenticator_response*(auth: ptr CassAuthenticator; size: csize): cstring
+proc cass_authenticator_response*(auth: ptr CassAuthenticator; size: csize_t): cstring
 ## *
 ##  Sets the response token.
 ## 
@@ -3240,7 +3240,7 @@ proc cass_authenticator_response*(auth: ptr CassAuthenticator; size: csize): cst
 ## 
 
 proc cass_authenticator_set_response*(auth: ptr CassAuthenticator;
-                                     response: cstring; response_size: csize)
+                                     response: cstring; response_size: csize_t)
 ## *
 ##  Sets an error for the authenticator exchange.
 ## 
@@ -3265,7 +3265,7 @@ proc cass_authenticator_set_error*(auth: ptr CassAuthenticator; message: cstring
 ## 
 
 proc cass_authenticator_set_error_n*(auth: ptr CassAuthenticator; message: cstring;
-                                    message_length: csize)
+                                    message_length: csize_t)
 ## **********************************************************************************
 ## 
 ##  Future
@@ -3394,7 +3394,7 @@ proc cass_future_error_code*(future: ptr CassFuture): CassError
 ## 
 
 proc cass_future_error_message*(future: ptr CassFuture; message: cstringArray;
-                               message_length: ptr csize)
+                               message_length: ptr csize_t)
 ## *
 ##  Gets a the number of custom payload items from a response future. If the future is not
 ##  ready this method will wait for the future to be set.
@@ -3407,7 +3407,7 @@ proc cass_future_error_message*(future: ptr CassFuture; message: cstringArray;
 ##  @return the number of custom payload items.
 ## 
 
-proc cass_future_custom_payload_item_count*(future: ptr CassFuture): csize
+proc cass_future_custom_payload_item_count*(future: ptr CassFuture): csize_t
 ## *
 ##  Gets a custom payload item from a response future at the specified index. If the future is not
 ##  ready this method will wait for the future to be set.
@@ -3425,10 +3425,10 @@ proc cass_future_custom_payload_item_count*(future: ptr CassFuture): csize
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_future_custom_payload_item*(future: ptr CassFuture; index: csize;
-                                     name: cstringArray; name_length: ptr csize;
+proc cass_future_custom_payload_item*(future: ptr CassFuture; index: csize_t;
+                                     name: cstringArray; name_length: ptr csize_t;
                                      value: ptr ptr cass_byte_t;
-                                     value_size: ptr csize): CassError
+                                     value_size: ptr csize_t): CassError
 ## **********************************************************************************
 ## 
 ##  Statement
@@ -3447,7 +3447,7 @@ proc cass_future_custom_payload_item*(future: ptr CassFuture; index: csize;
 ##  @see cass_statement_free()
 ## 
 
-proc cass_statement_new*(query: cstring; parameter_count: csize): ptr CassStatement
+proc cass_statement_new*(query: cstring; parameter_count: csize_t): ptr CassStatement
 ## *
 ##  Same as cass_statement_new(), but with lengths for string
 ##  parameters.
@@ -3462,8 +3462,8 @@ proc cass_statement_new*(query: cstring; parameter_count: csize): ptr CassStatem
 ##  @see cass_statement_new()
 ## 
 
-proc cass_statement_new_n*(query: cstring; query_length: csize;
-                          parameter_count: csize): ptr CassStatement
+proc cass_statement_new_n*(query: cstring; query_length: csize_t;
+                          parameter_count: csize_t): ptr CassStatement
 ## *
 ##  Clear and/or resize the statement's parameters.
 ## 
@@ -3474,7 +3474,7 @@ proc cass_statement_new_n*(query: cstring; query_length: csize;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_statement_reset_parameters*(statement: ptr CassStatement; count: csize): CassError
+proc cass_statement_reset_parameters*(statement: ptr CassStatement; count: csize_t): CassError
 ## *
 ##  Frees a statement instance. Statements can be immediately freed after
 ##  being prepared, executed or added to a batch.
@@ -3503,7 +3503,7 @@ proc cass_statement_free*(statement: ptr CassStatement)
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_statement_add_key_index*(statement: ptr CassStatement; index: csize): CassError
+proc cass_statement_add_key_index*(statement: ptr CassStatement; index: csize_t): CassError
 ## *
 ##  Sets the statement's keyspace for use with token-aware routing.
 ## 
@@ -3533,7 +3533,7 @@ proc cass_statement_set_keyspace*(statement: ptr CassStatement; keyspace: cstrin
 ## 
 
 proc cass_statement_set_keyspace_n*(statement: ptr CassStatement; keyspace: cstring;
-                                   keyspace_length: csize): CassError
+                                   keyspace_length: csize_t): CassError
 ## *
 ##  Sets the statement's consistency level.
 ## 
@@ -3615,7 +3615,7 @@ proc cass_statement_set_paging_state*(statement: ptr CassStatement;
 ## 
 
 proc cass_statement_set_paging_state_token*(statement: ptr CassStatement;
-    paging_state: cstring; paging_state_size: csize): CassError
+    paging_state: cstring; paging_state_size: csize_t): CassError
 ## *
 ##  Sets the statement's timestamp.
 ## 
@@ -3697,7 +3697,7 @@ proc cass_statement_set_custom_payload*(statement: ptr CassStatement;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_statement_bind_null*(statement: ptr CassStatement; index: csize): CassError
+proc cass_statement_bind_null*(statement: ptr CassStatement; index: csize_t): CassError
 ## *
 ##  Binds a null to all the values with the specified name.
 ## 
@@ -3727,7 +3727,7 @@ proc cass_statement_bind_null_by_name*(statement: ptr CassStatement; name: cstri
 ## 
 
 proc cass_statement_bind_null_by_name_n*(statement: ptr CassStatement;
-                                        name: cstring; name_length: csize): CassError
+                                        name: cstring; name_length: csize_t): CassError
 ## *
 ##  Binds a "tinyint" to a query or bound statement at the specified index.
 ## 
@@ -3741,7 +3741,7 @@ proc cass_statement_bind_null_by_name_n*(statement: ptr CassStatement;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_statement_bind_int8*(statement: ptr CassStatement; index: csize; value: int8): CassError
+proc cass_statement_bind_int8*(statement: ptr CassStatement; index: csize_t; value: int8): CassError
 ## *
 ##  Binds a "tinyint" to all the values with the specified name.
 ## 
@@ -3775,7 +3775,7 @@ proc cass_statement_bind_int8_by_name*(statement: ptr CassStatement; name: cstri
 ## 
 
 proc cass_statement_bind_int8_by_name_n*(statement: ptr CassStatement;
-                                        name: cstring; name_length: csize;
+                                        name: cstring; name_length: csize_t;
                                         value: int8): CassError
 ## *
 ##  Binds an "smallint" to a query or bound statement at the specified index.
@@ -3790,7 +3790,7 @@ proc cass_statement_bind_int8_by_name_n*(statement: ptr CassStatement;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_statement_bind_int16*(statement: ptr CassStatement; index: csize;
+proc cass_statement_bind_int16*(statement: ptr CassStatement; index: csize_t;
                                value: int16): CassError
 ## *
 ##  Binds an "smallint" to all the values with the specified name.
@@ -3825,7 +3825,7 @@ proc cass_statement_bind_int16_by_name*(statement: ptr CassStatement; name: cstr
 ## 
 
 proc cass_statement_bind_int16_by_name_n*(statement: ptr CassStatement;
-    name: cstring; name_length: csize; value: int16): CassError
+    name: cstring; name_length: csize_t; value: int16): CassError
 ## *
 ##  Binds an "int" to a query or bound statement at the specified index.
 ## 
@@ -3837,7 +3837,7 @@ proc cass_statement_bind_int16_by_name_n*(statement: ptr CassStatement;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_statement_bind_int32*(statement: ptr CassStatement; index: csize;
+proc cass_statement_bind_int32*(statement: ptr CassStatement; index: csize_t;
                                value: int32): CassError
 ## *
 ##  Binds an "int" to all the values with the specified name.
@@ -3871,7 +3871,7 @@ proc cass_statement_bind_int32_by_name*(statement: ptr CassStatement; name: cstr
 ## 
 
 proc cass_statement_bind_int32_by_name_n*(statement: ptr CassStatement;
-    name: cstring; name_length: csize; value: int32): CassError
+    name: cstring; name_length: csize_t; value: int32): CassError
 ## *
 ##  Binds a "date" to a query or bound statement at the specified index.
 ## 
@@ -3885,7 +3885,7 @@ proc cass_statement_bind_int32_by_name_n*(statement: ptr CassStatement;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_statement_bind_uint32*(statement: ptr CassStatement; index: csize;
+proc cass_statement_bind_uint32*(statement: ptr CassStatement; index: csize_t;
                                 value: uint32): CassError
 ## *
 ##  Binds a "date" to all the values with the specified name.
@@ -3920,7 +3920,7 @@ proc cass_statement_bind_uint32_by_name*(statement: ptr CassStatement;
 ## 
 
 proc cass_statement_bind_uint32_by_name_n*(statement: ptr CassStatement;
-    name: cstring; name_length: csize; value: uint32): CassError
+    name: cstring; name_length: csize_t; value: uint32): CassError
 ## *
 ##  Binds a "bigint", "counter", "timestamp" or "time" to a query or
 ##  bound statement at the specified index.
@@ -3933,7 +3933,7 @@ proc cass_statement_bind_uint32_by_name_n*(statement: ptr CassStatement;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_statement_bind_int64*(statement: ptr CassStatement; index: csize;
+proc cass_statement_bind_int64*(statement: ptr CassStatement; index: csize_t;
                                value: int64): CassError
 ## *
 ##  Binds a "bigint", "counter", "timestamp" or "time" to all values
@@ -3968,7 +3968,7 @@ proc cass_statement_bind_int64_by_name*(statement: ptr CassStatement; name: cstr
 ## 
 
 proc cass_statement_bind_int64_by_name_n*(statement: ptr CassStatement;
-    name: cstring; name_length: csize; value: int64): CassError
+    name: cstring; name_length: csize_t; value: int64): CassError
 ## *
 ##  Binds a "float" to a query or bound statement at the specified index.
 ## 
@@ -3980,7 +3980,7 @@ proc cass_statement_bind_int64_by_name_n*(statement: ptr CassStatement;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_statement_bind_float*(statement: ptr CassStatement; index: csize;
+proc cass_statement_bind_float*(statement: ptr CassStatement; index: csize_t;
                                value: cass_float_t): CassError
 ## *
 ##  Binds a "float" to all the values with the specified name.
@@ -4014,7 +4014,7 @@ proc cass_statement_bind_float_by_name*(statement: ptr CassStatement; name: cstr
 ## 
 
 proc cass_statement_bind_float_by_name_n*(statement: ptr CassStatement;
-    name: cstring; name_length: csize; value: cass_float_t): CassError
+    name: cstring; name_length: csize_t; value: cass_float_t): CassError
 ## *
 ##  Binds a "double" to a query or bound statement at the specified index.
 ## 
@@ -4026,7 +4026,7 @@ proc cass_statement_bind_float_by_name_n*(statement: ptr CassStatement;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_statement_bind_double*(statement: ptr CassStatement; index: csize;
+proc cass_statement_bind_double*(statement: ptr CassStatement; index: csize_t;
                                 value: cass_double_t): CassError
 ## *
 ##  Binds a "double" to all the values with the specified name.
@@ -4060,7 +4060,7 @@ proc cass_statement_bind_double_by_name*(statement: ptr CassStatement;
 ## 
 
 proc cass_statement_bind_double_by_name_n*(statement: ptr CassStatement;
-    name: cstring; name_length: csize; value: cass_double_t): CassError
+    name: cstring; name_length: csize_t; value: cass_double_t): CassError
 ## *
 ##  Binds a "boolean" to a query or bound statement at the specified index.
 ## 
@@ -4072,7 +4072,7 @@ proc cass_statement_bind_double_by_name_n*(statement: ptr CassStatement;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_statement_bind_bool*(statement: ptr CassStatement; index: csize;
+proc cass_statement_bind_bool*(statement: ptr CassStatement; index: csize_t;
                               value: cass_bool_t): CassError
 ## *
 ##  Binds a "boolean" to all the values with the specified name.
@@ -4106,7 +4106,7 @@ proc cass_statement_bind_bool_by_name*(statement: ptr CassStatement; name: cstri
 ## 
 
 proc cass_statement_bind_bool_by_name_n*(statement: ptr CassStatement;
-                                        name: cstring; name_length: csize;
+                                        name: cstring; name_length: csize_t;
                                         value: cass_bool_t): CassError
 ## *
 ##  Binds an "ascii", "text" or "varchar" to a query or bound statement
@@ -4121,7 +4121,7 @@ proc cass_statement_bind_bool_by_name_n*(statement: ptr CassStatement;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_statement_bind_string*(statement: ptr CassStatement; index: csize;
+proc cass_statement_bind_string*(statement: ptr CassStatement; index: csize_t;
                                 value: cstring): CassError
 ## *
 ##  Same as cass_statement_bind_string(), but with lengths for string
@@ -4138,8 +4138,8 @@ proc cass_statement_bind_string*(statement: ptr CassStatement; index: csize;
 ##  @see cass_statement_bind_string()
 ## 
 
-proc cass_statement_bind_string_n*(statement: ptr CassStatement; index: csize;
-                                  value: cstring; value_length: csize): CassError
+proc cass_statement_bind_string_n*(statement: ptr CassStatement; index: csize_t;
+                                  value: cstring; value_length: csize_t): CassError
 ## *
 ##  Binds an "ascii", "text" or "varchar" to all the values
 ##  with the specified name.
@@ -4175,7 +4175,7 @@ proc cass_statement_bind_string_by_name*(statement: ptr CassStatement;
 ## 
 
 proc cass_statement_bind_string_by_name_n*(statement: ptr CassStatement;
-    name: cstring; name_length: csize; value: cstring; value_length: csize): CassError
+    name: cstring; name_length: csize_t; value: cstring; value_length: csize_t): CassError
 ## *
 ##  Binds a "blob", "varint" or "custom" to a query or bound statement at the specified index.
 ## 
@@ -4189,8 +4189,8 @@ proc cass_statement_bind_string_by_name_n*(statement: ptr CassStatement;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_statement_bind_bytes*(statement: ptr CassStatement; index: csize;
-                               value: ptr cass_byte_t; value_size: csize): CassError
+proc cass_statement_bind_bytes*(statement: ptr CassStatement; index: csize_t;
+                               value: ptr cass_byte_t; value_size: csize_t): CassError
 ## *
 ##  Binds a "blob", "varint" or "custom" to all the values with the
 ##  specified name.
@@ -4209,7 +4209,7 @@ proc cass_statement_bind_bytes*(statement: ptr CassStatement; index: csize;
 ## 
 
 proc cass_statement_bind_bytes_by_name*(statement: ptr CassStatement; name: cstring;
-                                       value: ptr cass_byte_t; value_size: csize): CassError
+                                       value: ptr cass_byte_t; value_size: csize_t): CassError
 ## *
 ##  Same as cass_statement_bind_bytes_by_name(), but with lengths for string
 ##  parameters.
@@ -4227,7 +4227,7 @@ proc cass_statement_bind_bytes_by_name*(statement: ptr CassStatement; name: cstr
 ## 
 
 proc cass_statement_bind_bytes_by_name_n*(statement: ptr CassStatement;
-    name: cstring; name_length: csize; value: ptr cass_byte_t; value_size: csize): CassError
+    name: cstring; name_length: csize_t; value: ptr cass_byte_t; value_size: csize_t): CassError
 ## *
 ##  Binds a "custom" to a query or bound statement at the specified index.
 ## 
@@ -4242,9 +4242,9 @@ proc cass_statement_bind_bytes_by_name_n*(statement: ptr CassStatement;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_statement_bind_custom*(statement: ptr CassStatement; index: csize;
+proc cass_statement_bind_custom*(statement: ptr CassStatement; index: csize_t;
                                 class_name: cstring; value: ptr cass_byte_t;
-                                value_size: csize): CassError
+                                value_size: csize_t): CassError
 ## *
 ##  Same as cass_statement_bind_custom(), but with lengths for string
 ##  parameters.
@@ -4261,9 +4261,9 @@ proc cass_statement_bind_custom*(statement: ptr CassStatement; index: csize;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_statement_bind_custom_n*(statement: ptr CassStatement; index: csize;
-                                  class_name: cstring; class_name_length: csize;
-                                  value: ptr cass_byte_t; value_size: csize): CassError
+proc cass_statement_bind_custom_n*(statement: ptr CassStatement; index: csize_t;
+                                  class_name: cstring; class_name_length: csize_t;
+                                  value: ptr cass_byte_t; value_size: csize_t): CassError
 ## *
 ##  Binds a "custom" to all the values with the specified name.
 ## 
@@ -4283,7 +4283,7 @@ proc cass_statement_bind_custom_n*(statement: ptr CassStatement; index: csize;
 
 proc cass_statement_bind_custom_by_name*(statement: ptr CassStatement;
                                         name: cstring; class_name: cstring;
-                                        value: ptr cass_byte_t; value_size: csize): CassError
+                                        value: ptr cass_byte_t; value_size: csize_t): CassError
 ## *
 ##  Same as cass_statement_bind_custom_by_name(), but with lengths for string
 ##  parameters.
@@ -4303,8 +4303,8 @@ proc cass_statement_bind_custom_by_name*(statement: ptr CassStatement;
 ## 
 
 proc cass_statement_bind_custom_by_name_n*(statement: ptr CassStatement;
-    name: cstring; name_length: csize; class_name: cstring; class_name_length: csize;
-    value: ptr cass_byte_t; value_size: csize): CassError
+    name: cstring; name_length: csize_t; class_name: cstring; class_name_length: csize_t;
+    value: ptr cass_byte_t; value_size: csize_t): CassError
 ## *
 ##  Binds a "uuid" or "timeuuid" to a query or bound statement at the specified index.
 ## 
@@ -4316,7 +4316,7 @@ proc cass_statement_bind_custom_by_name_n*(statement: ptr CassStatement;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_statement_bind_uuid*(statement: ptr CassStatement; index: csize;
+proc cass_statement_bind_uuid*(statement: ptr CassStatement; index: csize_t;
                               value: CassUuid): CassError
 ## *
 ##  Binds a "uuid" or "timeuuid" to all the values
@@ -4351,7 +4351,7 @@ proc cass_statement_bind_uuid_by_name*(statement: ptr CassStatement; name: cstri
 ## 
 
 proc cass_statement_bind_uuid_by_name_n*(statement: ptr CassStatement;
-                                        name: cstring; name_length: csize;
+                                        name: cstring; name_length: csize_t;
                                         value: CassUuid): CassError
 ## *
 ##  Binds an "inet" to a query or bound statement at the specified index.
@@ -4364,7 +4364,7 @@ proc cass_statement_bind_uuid_by_name_n*(statement: ptr CassStatement;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_statement_bind_inet*(statement: ptr CassStatement; index: csize;
+proc cass_statement_bind_inet*(statement: ptr CassStatement; index: csize_t;
                               value: CassInet): CassError
 ## *
 ##  Binds an "inet" to all the values with the specified name.
@@ -4398,7 +4398,7 @@ proc cass_statement_bind_inet_by_name*(statement: ptr CassStatement; name: cstri
 ## 
 
 proc cass_statement_bind_inet_by_name_n*(statement: ptr CassStatement;
-                                        name: cstring; name_length: csize;
+                                        name: cstring; name_length: csize_t;
                                         value: CassInet): CassError
 ## *
 ##  Bind a "decimal" to a query or bound statement at the specified index.
@@ -4414,8 +4414,8 @@ proc cass_statement_bind_inet_by_name_n*(statement: ptr CassStatement;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_statement_bind_decimal*(statement: ptr CassStatement; index: csize;
-                                 varint: ptr cass_byte_t; varint_size: csize;
+proc cass_statement_bind_decimal*(statement: ptr CassStatement; index: csize_t;
+                                 varint: ptr cass_byte_t; varint_size: csize_t;
                                  scale: int32): CassError
 ## *
 ##  Binds a "decimal" to all the values with the specified name.
@@ -4435,7 +4435,7 @@ proc cass_statement_bind_decimal*(statement: ptr CassStatement; index: csize;
 ## 
 
 proc cass_statement_bind_decimal_by_name*(statement: ptr CassStatement;
-    name: cstring; varint: ptr cass_byte_t; varint_size: csize; scale: int32): CassError
+    name: cstring; varint: ptr cass_byte_t; varint_size: csize_t; scale: int32): CassError
 ## *
 ##  Same as cass_statement_bind_decimal_by_name(), but with lengths for string
 ##  parameters.
@@ -4454,7 +4454,7 @@ proc cass_statement_bind_decimal_by_name*(statement: ptr CassStatement;
 ## 
 
 proc cass_statement_bind_decimal_by_name_n*(statement: ptr CassStatement;
-    name: cstring; name_length: csize; varint: ptr cass_byte_t; varint_size: csize;
+    name: cstring; name_length: csize_t; varint: ptr cass_byte_t; varint_size: csize_t;
     scale: int32): CassError
 ## *
 ##  Binds a "duration" to a query or bound statement at the specified index.
@@ -4471,7 +4471,7 @@ proc cass_statement_bind_decimal_by_name_n*(statement: ptr CassStatement;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_statement_bind_duration*(statement: ptr CassStatement; index: csize;
+proc cass_statement_bind_duration*(statement: ptr CassStatement; index: csize_t;
                                   months: int32; days: int32; nanos: int64): CassError
 ## *
 ##  Binds a "duration" to all the values with the specified name.
@@ -4510,7 +4510,7 @@ proc cass_statement_bind_duration_by_name*(statement: ptr CassStatement;
 ## 
 
 proc cass_statement_bind_duration_by_name_n*(statement: ptr CassStatement;
-    name: cstring; name_length: csize; months: int32; days: int32; nanos: int64): CassError
+    name: cstring; name_length: csize_t; months: int32; days: int32; nanos: int64): CassError
 ## *
 ##  Bind a "list", "map" or "set" to a query or bound statement at the
 ##  specified index.
@@ -4523,7 +4523,7 @@ proc cass_statement_bind_duration_by_name_n*(statement: ptr CassStatement;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_statement_bind_collection*(statement: ptr CassStatement; index: csize;
+proc cass_statement_bind_collection*(statement: ptr CassStatement; index: csize_t;
                                     collection: ptr CassCollection): CassError
 ## *
 ##  Bind a "list", "map" or "set" to all the values with the
@@ -4558,7 +4558,7 @@ proc cass_statement_bind_collection_by_name*(statement: ptr CassStatement;
 ## 
 
 proc cass_statement_bind_collection_by_name_n*(statement: ptr CassStatement;
-    name: cstring; name_length: csize; collection: ptr CassCollection): CassError
+    name: cstring; name_length: csize_t; collection: ptr CassCollection): CassError
 ## *
 ##  Bind a "tuple" to a query or bound statement at the specified index.
 ## 
@@ -4572,7 +4572,7 @@ proc cass_statement_bind_collection_by_name_n*(statement: ptr CassStatement;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_statement_bind_tuple*(statement: ptr CassStatement; index: csize;
+proc cass_statement_bind_tuple*(statement: ptr CassStatement; index: csize_t;
                                `tuple`: ptr CassTuple): CassError
 ## *
 ##  Bind a "tuple" to all the values with the specified name.
@@ -4607,7 +4607,7 @@ proc cass_statement_bind_tuple_by_name*(statement: ptr CassStatement; name: cstr
 ## 
 
 proc cass_statement_bind_tuple_by_name_n*(statement: ptr CassStatement;
-    name: cstring; name_length: csize; `tuple`: ptr CassTuple): CassError
+    name: cstring; name_length: csize_t; `tuple`: ptr CassTuple): CassError
 ## *
 ##  Bind a user defined type to a query or bound statement at the
 ##  specified index.
@@ -4622,7 +4622,7 @@ proc cass_statement_bind_tuple_by_name_n*(statement: ptr CassStatement;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_statement_bind_user_type*(statement: ptr CassStatement; index: csize;
+proc cass_statement_bind_user_type*(statement: ptr CassStatement; index: csize_t;
                                    user_type: ptr CassUserType): CassError
 ## *
 ##  Bind a user defined type to a query or bound statement with the
@@ -4658,7 +4658,7 @@ proc cass_statement_bind_user_type_by_name*(statement: ptr CassStatement;
 ## 
 
 proc cass_statement_bind_user_type_by_name_n*(statement: ptr CassStatement;
-    name: cstring; name_length: csize; user_type: ptr CassUserType): CassError
+    name: cstring; name_length: csize_t; user_type: ptr CassUserType): CassError
 ## **********************************************************************************
 ## 
 ##  Prepared
@@ -4697,8 +4697,8 @@ proc cass_prepared_bind*(prepared: ptr CassPrepared): ptr CassStatement
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_prepared_parameter_name*(prepared: ptr CassPrepared; index: csize;
-                                  name: cstringArray; name_length: ptr csize): CassError
+proc cass_prepared_parameter_name*(prepared: ptr CassPrepared; index: csize_t;
+                                  name: cstringArray; name_length: ptr csize_t): CassError
 ## *
 ##  Gets the data type of a parameter at the specified index.
 ## 
@@ -4710,7 +4710,7 @@ proc cass_prepared_parameter_name*(prepared: ptr CassPrepared; index: csize;
 ##  this reference as it is bound to the lifetime of the prepared.
 ## 
 
-proc cass_prepared_parameter_data_type*(prepared: ptr CassPrepared; index: csize): ptr CassDataType
+proc cass_prepared_parameter_data_type*(prepared: ptr CassPrepared; index: csize_t): ptr CassDataType
 ## *
 ##  Gets the data type of a parameter for the specified name.
 ## 
@@ -4740,7 +4740,7 @@ proc cass_prepared_parameter_data_type_by_name*(prepared: ptr CassPrepared;
 ## 
 
 proc cass_prepared_parameter_data_type_by_name_n*(prepared: ptr CassPrepared;
-    name: cstring; name_length: csize): ptr CassDataType
+    name: cstring; name_length: csize_t): ptr CassDataType
 ## **********************************************************************************
 ## 
 ##  Batch
@@ -4928,7 +4928,7 @@ proc cass_data_type_new_from_existing*(data_type: ptr CassDataType): ptr CassDat
 ##  @see cass_data_type_free()
 ## 
 
-proc cass_data_type_new_tuple*(item_count: csize): ptr CassDataType
+proc cass_data_type_new_tuple*(item_count: csize_t): ptr CassDataType
 ## *
 ##  Creates a new UDT (user defined type) data type.
 ## 
@@ -4942,7 +4942,7 @@ proc cass_data_type_new_tuple*(item_count: csize): ptr CassDataType
 ##  @see cass_data_type_free()
 ## 
 
-proc cass_data_type_new_udt*(field_count: csize): ptr CassDataType
+proc cass_data_type_new_udt*(field_count: csize_t): ptr CassDataType
 ## *
 ##  Frees a data type instance.
 ## 
@@ -4982,7 +4982,7 @@ proc cass_data_type_is_frozen*(data_type: ptr CassDataType): cass_bool_t
 ## 
 
 proc cass_data_type_type_name*(data_type: ptr CassDataType; type_name: cstringArray;
-                              type_name_length: ptr csize): CassError
+                              type_name_length: ptr csize_t): CassError
 ## *
 ##  Sets the type name of a UDT data type.
 ## 
@@ -5007,7 +5007,7 @@ proc cass_data_type_set_type_name*(data_type: ptr CassDataType; type_name: cstri
 ## 
 
 proc cass_data_type_set_type_name_n*(data_type: ptr CassDataType;
-                                    type_name: cstring; type_name_length: csize): CassError
+                                    type_name: cstring; type_name_length: csize_t): CassError
 ## *
 ##  Gets the type name of a UDT data type.
 ## 
@@ -5022,7 +5022,7 @@ proc cass_data_type_set_type_name_n*(data_type: ptr CassDataType;
 ## 
 
 proc cass_data_type_keyspace*(data_type: ptr CassDataType; keyspace: cstringArray;
-                             keyspace_length: ptr csize): CassError
+                             keyspace_length: ptr csize_t): CassError
 ## *
 ##  Sets the keyspace of a UDT data type.
 ## 
@@ -5051,7 +5051,7 @@ proc cass_data_type_set_keyspace*(data_type: ptr CassDataType; keyspace: cstring
 ## 
 
 proc cass_data_type_set_keyspace_n*(data_type: ptr CassDataType; keyspace: cstring;
-                                   keyspace_length: csize): CassError
+                                   keyspace_length: csize_t): CassError
 ## *
 ##  Gets the class name of a custom data type.
 ## 
@@ -5065,7 +5065,7 @@ proc cass_data_type_set_keyspace_n*(data_type: ptr CassDataType; keyspace: cstri
 
 proc cass_data_type_class_name*(data_type: ptr CassDataType;
                                class_name: cstringArray;
-                               class_name_length: ptr csize): CassError
+                               class_name_length: ptr csize_t): CassError
 ## *
 ##  Sets the class name of a custom data type.
 ## 
@@ -5090,7 +5090,7 @@ proc cass_data_type_set_class_name*(data_type: ptr CassDataType; class_name: cst
 ## 
 
 proc cass_data_type_set_class_name_n*(data_type: ptr CassDataType;
-                                     class_name: cstring; class_name_length: csize): CassError
+                                     class_name: cstring; class_name_length: csize_t): CassError
 ## *
 ##  Gets the sub-data type count of a UDT (user defined type), tuple
 ##  or collection.
@@ -5101,12 +5101,12 @@ proc cass_data_type_set_class_name_n*(data_type: ptr CassDataType;
 ##  @return Returns the number of sub-data types
 ## 
 
-proc cass_data_type_sub_type_count*(data_type: ptr CassDataType): csize
+proc cass_data_type_sub_type_count*(data_type: ptr CassDataType): csize_t
 ## *
 ##  @deprecated Use cass_data_type_sub_type_count()
 ## 
 
-proc cass_data_sub_type_count*(data_type: ptr CassDataType): csize
+proc cass_data_sub_type_count*(data_type: ptr CassDataType): csize_t
 ## *
 ##  Gets the sub-data type count of a UDT (user defined type), tuple
 ##  or collection.
@@ -5129,7 +5129,7 @@ proc cass_data_sub_type_count*(data_type: ptr CassDataType): csize
 ##  is returned if the index is out of range.
 ## 
 
-proc cass_data_type_sub_data_type*(data_type: ptr CassDataType; index: csize): ptr CassDataType
+proc cass_data_type_sub_data_type*(data_type: ptr CassDataType; index: csize_t): ptr CassDataType
 ## *
 ##  Gets the sub-data type of a UDT (user defined type) at the specified index.
 ## 
@@ -5163,7 +5163,7 @@ proc cass_data_type_sub_data_type_by_name*(data_type: ptr CassDataType;
 ## 
 
 proc cass_data_type_sub_data_type_by_name_n*(data_type: ptr CassDataType;
-    name: cstring; name_length: csize): ptr CassDataType
+    name: cstring; name_length: csize_t): ptr CassDataType
 ## *
 ##  Gets the sub-type name of a UDT (user defined type) at the specified index.
 ## 
@@ -5178,8 +5178,8 @@ proc cass_data_type_sub_data_type_by_name_n*(data_type: ptr CassDataType;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_data_type_sub_type_name*(data_type: ptr CassDataType; index: csize;
-                                  name: cstringArray; name_length: ptr csize): CassError
+proc cass_data_type_sub_type_name*(data_type: ptr CassDataType; index: csize_t;
+                                  name: cstringArray; name_length: ptr csize_t): CassError
 ## *
 ##  Adds a sub-data type to a tuple or collection.
 ## 
@@ -5223,7 +5223,7 @@ proc cass_data_type_add_sub_type_by_name*(data_type: ptr CassDataType;
 ## 
 
 proc cass_data_type_add_sub_type_by_name_n*(data_type: ptr CassDataType;
-    name: cstring; name_length: csize; sub_data_type: ptr CassDataType): CassError
+    name: cstring; name_length: csize_t; sub_data_type: ptr CassDataType): CassError
 ## *
 ##  Adds a sub-data type to a tuple or collection using a value type.
 ## 
@@ -5267,7 +5267,7 @@ proc cass_data_type_add_sub_value_type_by_name*(data_type: ptr CassDataType;
 ## 
 
 proc cass_data_type_add_sub_value_type_by_name_n*(data_type: ptr CassDataType;
-    name: cstring; name_length: csize; sub_value_type: CassValueType): CassError
+    name: cstring; name_length: csize_t; sub_value_type: CassValueType): CassError
 ## **********************************************************************************
 ## 
 ##  Collection
@@ -5285,7 +5285,7 @@ proc cass_data_type_add_sub_value_type_by_name_n*(data_type: ptr CassDataType;
 ##  @see cass_collection_free()
 ## 
 
-proc cass_collection_new*(`type`: CassCollectionType; item_count: csize): ptr CassCollection
+proc cass_collection_new*(`type`: CassCollectionType; item_count: csize_t): ptr CassCollection
 ## *
 ##  Creates a new collection from an existing data type.
 ## 
@@ -5299,7 +5299,7 @@ proc cass_collection_new*(`type`: CassCollectionType; item_count: csize): ptr Ca
 ## 
 
 proc cass_collection_new_from_data_type*(data_type: ptr CassDataType;
-                                        item_count: csize): ptr CassCollection
+                                        item_count: csize_t): ptr CassCollection
 ## *
 ##  Frees a collection instance.
 ## 
@@ -5442,7 +5442,7 @@ proc cass_collection_append_string*(collection: ptr CassCollection; value: cstri
 ## 
 
 proc cass_collection_append_string_n*(collection: ptr CassCollection;
-                                     value: cstring; value_length: csize): CassError
+                                     value: cstring; value_length: csize_t): CassError
 ## *
 ##  Appends a "blob", "varint" or "custom" to the collection.
 ## 
@@ -5456,7 +5456,7 @@ proc cass_collection_append_string_n*(collection: ptr CassCollection;
 ## 
 
 proc cass_collection_append_bytes*(collection: ptr CassCollection;
-                                  value: ptr cass_byte_t; value_size: csize): CassError
+                                  value: ptr cass_byte_t; value_size: csize_t): CassError
 ## *
 ##  Appends a "custom" to the collection.
 ## 
@@ -5472,7 +5472,7 @@ proc cass_collection_append_bytes*(collection: ptr CassCollection;
 
 proc cass_collection_append_custom*(collection: ptr CassCollection;
                                    class_name: cstring; value: ptr cass_byte_t;
-                                   value_size: csize): CassError
+                                   value_size: csize_t): CassError
 ## *
 ##  Same as cass_collection_append_custom(), but with lengths for string
 ##  parameters.
@@ -5491,8 +5491,8 @@ proc cass_collection_append_custom*(collection: ptr CassCollection;
 
 proc cass_collection_append_custom_n*(collection: ptr CassCollection;
                                      class_name: cstring;
-                                     class_name_length: csize;
-                                     value: ptr cass_byte_t; value_size: csize): CassError
+                                     class_name_length: csize_t;
+                                     value: ptr cass_byte_t; value_size: csize_t): CassError
 ## *
 ##  Appends a "uuid" or "timeuuid"  to the collection.
 ## 
@@ -5529,7 +5529,7 @@ proc cass_collection_append_inet*(collection: ptr CassCollection; value: CassIne
 ## 
 
 proc cass_collection_append_decimal*(collection: ptr CassCollection;
-                                    varint: ptr cass_byte_t; varint_size: csize;
+                                    varint: ptr cass_byte_t; varint_size: csize_t;
                                     scale: int32): CassError
 ## *
 ##  Appends a "duration" to the collection.
@@ -5607,7 +5607,7 @@ proc cass_collection_append_user_type*(collection: ptr CassCollection;
 ##  @see cass_tuple_free()
 ## 
 
-proc cass_tuple_new*(item_count: csize): ptr CassTuple
+proc cass_tuple_new*(item_count: csize_t): ptr CassTuple
 ## *
 ##  Creates a new tuple from an existing data type.
 ## 
@@ -5656,7 +5656,7 @@ proc cass_tuple_data_type*(`tuple`: ptr CassTuple): ptr CassDataType
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_tuple_set_null*(`tuple`: ptr CassTuple; index: csize): CassError
+proc cass_tuple_set_null*(`tuple`: ptr CassTuple; index: csize_t): CassError
 ## *
 ##  Sets a "tinyint" in a tuple at the specified index.
 ## 
@@ -5670,7 +5670,7 @@ proc cass_tuple_set_null*(`tuple`: ptr CassTuple; index: csize): CassError
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_tuple_set_int8*(`tuple`: ptr CassTuple; index: csize; value: int8): CassError
+proc cass_tuple_set_int8*(`tuple`: ptr CassTuple; index: csize_t; value: int8): CassError
 ## *
 ##  Sets an "smallint" in a tuple at the specified index.
 ## 
@@ -5684,7 +5684,7 @@ proc cass_tuple_set_int8*(`tuple`: ptr CassTuple; index: csize; value: int8): Ca
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_tuple_set_int16*(`tuple`: ptr CassTuple; index: csize; value: int16): CassError
+proc cass_tuple_set_int16*(`tuple`: ptr CassTuple; index: csize_t; value: int16): CassError
 ## *
 ##  Sets an "int" in a tuple at the specified index.
 ## 
@@ -5698,7 +5698,7 @@ proc cass_tuple_set_int16*(`tuple`: ptr CassTuple; index: csize; value: int16): 
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_tuple_set_int32*(`tuple`: ptr CassTuple; index: csize; value: int32): CassError
+proc cass_tuple_set_int32*(`tuple`: ptr CassTuple; index: csize_t; value: int32): CassError
 ## *
 ##  Sets a "date" in a tuple at the specified index.
 ## 
@@ -5712,7 +5712,7 @@ proc cass_tuple_set_int32*(`tuple`: ptr CassTuple; index: csize; value: int32): 
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_tuple_set_uint32*(`tuple`: ptr CassTuple; index: csize; value: uint32): CassError
+proc cass_tuple_set_uint32*(`tuple`: ptr CassTuple; index: csize_t; value: uint32): CassError
 ## *
 ##  Sets a "bigint", "counter", "timestamp" or "time" in a tuple at the
 ##  specified index.
@@ -5727,7 +5727,7 @@ proc cass_tuple_set_uint32*(`tuple`: ptr CassTuple; index: csize; value: uint32)
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_tuple_set_int64*(`tuple`: ptr CassTuple; index: csize; value: int64): CassError
+proc cass_tuple_set_int64*(`tuple`: ptr CassTuple; index: csize_t; value: int64): CassError
 ## *
 ##  Sets a "float" in a tuple at the specified index.
 ## 
@@ -5741,7 +5741,7 @@ proc cass_tuple_set_int64*(`tuple`: ptr CassTuple; index: csize; value: int64): 
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_tuple_set_float*(`tuple`: ptr CassTuple; index: csize; value: cass_float_t): CassError
+proc cass_tuple_set_float*(`tuple`: ptr CassTuple; index: csize_t; value: cass_float_t): CassError
 ## *
 ##  Sets a "double" in a tuple at the specified index.
 ## 
@@ -5755,7 +5755,7 @@ proc cass_tuple_set_float*(`tuple`: ptr CassTuple; index: csize; value: cass_flo
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_tuple_set_double*(`tuple`: ptr CassTuple; index: csize; value: cass_double_t): CassError
+proc cass_tuple_set_double*(`tuple`: ptr CassTuple; index: csize_t; value: cass_double_t): CassError
 ## *
 ##  Sets a "boolean" in a tuple at the specified index.
 ## 
@@ -5769,7 +5769,7 @@ proc cass_tuple_set_double*(`tuple`: ptr CassTuple; index: csize; value: cass_do
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_tuple_set_bool*(`tuple`: ptr CassTuple; index: csize; value: cass_bool_t): CassError
+proc cass_tuple_set_bool*(`tuple`: ptr CassTuple; index: csize_t; value: cass_bool_t): CassError
 ## *
 ##  Sets an "ascii", "text" or "varchar" in a tuple at the specified index.
 ## 
@@ -5784,7 +5784,7 @@ proc cass_tuple_set_bool*(`tuple`: ptr CassTuple; index: csize; value: cass_bool
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_tuple_set_string*(`tuple`: ptr CassTuple; index: csize; value: cstring): CassError
+proc cass_tuple_set_string*(`tuple`: ptr CassTuple; index: csize_t; value: cstring): CassError
 ## *
 ##  Same as cass_tuple_set_string(), but with lengths for string
 ##  parameters.
@@ -5802,8 +5802,8 @@ proc cass_tuple_set_string*(`tuple`: ptr CassTuple; index: csize; value: cstring
 ##  @see cass_tuple_set_string();
 ## 
 
-proc cass_tuple_set_string_n*(`tuple`: ptr CassTuple; index: csize; value: cstring;
-                             value_length: csize): CassError
+proc cass_tuple_set_string_n*(`tuple`: ptr CassTuple; index: csize_t; value: cstring;
+                             value_length: csize_t): CassError
 ## *
 ##  Sets a "blob", "varint" or "custom" in a tuple at the specified index.
 ## 
@@ -5819,8 +5819,8 @@ proc cass_tuple_set_string_n*(`tuple`: ptr CassTuple; index: csize; value: cstri
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_tuple_set_bytes*(`tuple`: ptr CassTuple; index: csize;
-                          value: ptr cass_byte_t; value_size: csize): CassError
+proc cass_tuple_set_bytes*(`tuple`: ptr CassTuple; index: csize_t;
+                          value: ptr cass_byte_t; value_size: csize_t): CassError
 ## *
 ##  Sets a "custom" in a tuple at the specified index.
 ## 
@@ -5835,8 +5835,8 @@ proc cass_tuple_set_bytes*(`tuple`: ptr CassTuple; index: csize;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_tuple_set_custom*(`tuple`: ptr CassTuple; index: csize; class_name: cstring;
-                           value: ptr cass_byte_t; value_size: csize): CassError
+proc cass_tuple_set_custom*(`tuple`: ptr CassTuple; index: csize_t; class_name: cstring;
+                           value: ptr cass_byte_t; value_size: csize_t): CassError
 ## *
 ##  Same as cass_tuple_set_custom(), but with lengths for string
 ##  parameters.
@@ -5854,9 +5854,9 @@ proc cass_tuple_set_custom*(`tuple`: ptr CassTuple; index: csize; class_name: cs
 ##  @see cass_tuple_set_custom()
 ## 
 
-proc cass_tuple_set_custom_n*(`tuple`: ptr CassTuple; index: csize;
-                             class_name: cstring; class_name_length: csize;
-                             value: ptr cass_byte_t; value_size: csize): CassError
+proc cass_tuple_set_custom_n*(`tuple`: ptr CassTuple; index: csize_t;
+                             class_name: cstring; class_name_length: csize_t;
+                             value: ptr cass_byte_t; value_size: csize_t): CassError
 ## *
 ##  Sets a "uuid" or "timeuuid" in a tuple at the specified index.
 ## 
@@ -5870,7 +5870,7 @@ proc cass_tuple_set_custom_n*(`tuple`: ptr CassTuple; index: csize;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_tuple_set_uuid*(`tuple`: ptr CassTuple; index: csize; value: CassUuid): CassError
+proc cass_tuple_set_uuid*(`tuple`: ptr CassTuple; index: csize_t; value: CassUuid): CassError
 ## *
 ##  Sets an "inet" in a tuple at the specified index.
 ## 
@@ -5884,7 +5884,7 @@ proc cass_tuple_set_uuid*(`tuple`: ptr CassTuple; index: csize; value: CassUuid)
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_tuple_set_inet*(`tuple`: ptr CassTuple; index: csize; value: CassInet): CassError
+proc cass_tuple_set_inet*(`tuple`: ptr CassTuple; index: csize_t; value: CassInet): CassError
 ## *
 ##  Sets a "decimal" in a tuple at the specified index.
 ## 
@@ -5901,8 +5901,8 @@ proc cass_tuple_set_inet*(`tuple`: ptr CassTuple; index: csize; value: CassInet)
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_tuple_set_decimal*(`tuple`: ptr CassTuple; index: csize;
-                            varint: ptr cass_byte_t; varint_size: csize; scale: int32): CassError
+proc cass_tuple_set_decimal*(`tuple`: ptr CassTuple; index: csize_t;
+                            varint: ptr cass_byte_t; varint_size: csize_t; scale: int32): CassError
 ## *
 ##  Sets a "duration" in a tuple at the specified index.
 ## 
@@ -5918,7 +5918,7 @@ proc cass_tuple_set_decimal*(`tuple`: ptr CassTuple; index: csize;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_tuple_set_duration*(`tuple`: ptr CassTuple; index: csize; months: int32;
+proc cass_tuple_set_duration*(`tuple`: ptr CassTuple; index: csize_t; months: int32;
                              days: int32; nanos: int64): CassError
 ## *
 ##  Sets a "list", "map" or "set" in a tuple at the specified index.
@@ -5933,7 +5933,7 @@ proc cass_tuple_set_duration*(`tuple`: ptr CassTuple; index: csize; months: int3
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_tuple_set_collection*(`tuple`: ptr CassTuple; index: csize;
+proc cass_tuple_set_collection*(`tuple`: ptr CassTuple; index: csize_t;
                                value: ptr CassCollection): CassError
 ## *
 ##  Sets a "tuple" in a tuple at the specified index.
@@ -5948,7 +5948,7 @@ proc cass_tuple_set_collection*(`tuple`: ptr CassTuple; index: csize;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_tuple_set_tuple*(`tuple`: ptr CassTuple; index: csize; value: ptr CassTuple): CassError
+proc cass_tuple_set_tuple*(`tuple`: ptr CassTuple; index: csize_t; value: ptr CassTuple): CassError
 ## *
 ##  Sets a "udt" in a tuple at the specified index.
 ## 
@@ -5962,7 +5962,7 @@ proc cass_tuple_set_tuple*(`tuple`: ptr CassTuple; index: csize; value: ptr Cass
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_tuple_set_user_type*(`tuple`: ptr CassTuple; index: csize;
+proc cass_tuple_set_user_type*(`tuple`: ptr CassTuple; index: csize_t;
                               value: ptr CassUserType): CassError
 ## **********************************************************************************
 ## 
@@ -6019,7 +6019,7 @@ proc cass_user_type_data_type*(user_type: ptr CassUserType): ptr CassDataType
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_user_type_set_null*(user_type: ptr CassUserType; index: csize): CassError
+proc cass_user_type_set_null*(user_type: ptr CassUserType; index: csize_t): CassError
 ## *
 ##  Sets a null in a user defined type at the specified name.
 ## 
@@ -6050,7 +6050,7 @@ proc cass_user_type_set_null_by_name*(user_type: ptr CassUserType; name: cstring
 ## 
 
 proc cass_user_type_set_null_by_name_n*(user_type: ptr CassUserType; name: cstring;
-                                       name_length: csize): CassError
+                                       name_length: csize_t): CassError
 ## *
 ##  Sets a "tinyint" in a user defined type at the specified index.
 ## 
@@ -6064,7 +6064,7 @@ proc cass_user_type_set_null_by_name_n*(user_type: ptr CassUserType; name: cstri
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_user_type_set_int8*(user_type: ptr CassUserType; index: csize; value: int8): CassError
+proc cass_user_type_set_int8*(user_type: ptr CassUserType; index: csize_t; value: int8): CassError
 ## *
 ##  Sets a "tinyint" in a user defined type at the specified name.
 ## 
@@ -6098,7 +6098,7 @@ proc cass_user_type_set_int8_by_name*(user_type: ptr CassUserType; name: cstring
 ## 
 
 proc cass_user_type_set_int8_by_name_n*(user_type: ptr CassUserType; name: cstring;
-                                       name_length: csize; value: int8): CassError
+                                       name_length: csize_t; value: int8): CassError
 ## *
 ##  Sets an "smallint" in a user defined type at the specified index.
 ## 
@@ -6112,7 +6112,7 @@ proc cass_user_type_set_int8_by_name_n*(user_type: ptr CassUserType; name: cstri
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_user_type_set_int16*(user_type: ptr CassUserType; index: csize; value: int16): CassError
+proc cass_user_type_set_int16*(user_type: ptr CassUserType; index: csize_t; value: int16): CassError
 ## *
 ##  Sets an "smallint" in a user defined type at the specified name.
 ## 
@@ -6146,7 +6146,7 @@ proc cass_user_type_set_int16_by_name*(user_type: ptr CassUserType; name: cstrin
 ## 
 
 proc cass_user_type_set_int16_by_name_n*(user_type: ptr CassUserType; name: cstring;
-                                        name_length: csize; value: int16): CassError
+                                        name_length: csize_t; value: int16): CassError
 ## *
 ##  Sets an "int" in a user defined type at the specified index.
 ## 
@@ -6160,7 +6160,7 @@ proc cass_user_type_set_int16_by_name_n*(user_type: ptr CassUserType; name: cstr
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_user_type_set_int32*(user_type: ptr CassUserType; index: csize; value: int32): CassError
+proc cass_user_type_set_int32*(user_type: ptr CassUserType; index: csize_t; value: int32): CassError
 ## *
 ##  Sets an "int" in a user defined type at the specified name.
 ## 
@@ -6194,7 +6194,7 @@ proc cass_user_type_set_int32_by_name*(user_type: ptr CassUserType; name: cstrin
 ## 
 
 proc cass_user_type_set_int32_by_name_n*(user_type: ptr CassUserType; name: cstring;
-                                        name_length: csize; value: int32): CassError
+                                        name_length: csize_t; value: int32): CassError
 ## *
 ##  Sets a "date" in a user defined type at the specified index.
 ## 
@@ -6208,7 +6208,7 @@ proc cass_user_type_set_int32_by_name_n*(user_type: ptr CassUserType; name: cstr
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_user_type_set_uint32*(user_type: ptr CassUserType; index: csize;
+proc cass_user_type_set_uint32*(user_type: ptr CassUserType; index: csize_t;
                                value: uint32): CassError
 ## *
 ##  Sets a "date" in a user defined type at the specified name.
@@ -6243,7 +6243,7 @@ proc cass_user_type_set_uint32_by_name*(user_type: ptr CassUserType; name: cstri
 ## 
 
 proc cass_user_type_set_uint32_by_name_n*(user_type: ptr CassUserType;
-    name: cstring; name_length: csize; value: uint32): CassError
+    name: cstring; name_length: csize_t; value: uint32): CassError
 ## *
 ##  Sets an "bigint", "counter", "timestamp" or "time" in a
 ##  user defined type at the specified index.
@@ -6258,7 +6258,7 @@ proc cass_user_type_set_uint32_by_name_n*(user_type: ptr CassUserType;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_user_type_set_int64*(user_type: ptr CassUserType; index: csize; value: int64): CassError
+proc cass_user_type_set_int64*(user_type: ptr CassUserType; index: csize_t; value: int64): CassError
 ## *
 ##  Sets an "bigint", "counter", "timestamp" or "time" in a
 ##  user defined type at the specified name.
@@ -6293,7 +6293,7 @@ proc cass_user_type_set_int64_by_name*(user_type: ptr CassUserType; name: cstrin
 ## 
 
 proc cass_user_type_set_int64_by_name_n*(user_type: ptr CassUserType; name: cstring;
-                                        name_length: csize; value: int64): CassError
+                                        name_length: csize_t; value: int64): CassError
 ## *
 ##  Sets a "float" in a user defined type at the specified index.
 ## 
@@ -6307,7 +6307,7 @@ proc cass_user_type_set_int64_by_name_n*(user_type: ptr CassUserType; name: cstr
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_user_type_set_float*(user_type: ptr CassUserType; index: csize;
+proc cass_user_type_set_float*(user_type: ptr CassUserType; index: csize_t;
                               value: cass_float_t): CassError
 ## *
 ##  Sets a "float" in a user defined type at the specified name.
@@ -6342,7 +6342,7 @@ proc cass_user_type_set_float_by_name*(user_type: ptr CassUserType; name: cstrin
 ## 
 
 proc cass_user_type_set_float_by_name_n*(user_type: ptr CassUserType; name: cstring;
-                                        name_length: csize; value: cass_float_t): CassError
+                                        name_length: csize_t; value: cass_float_t): CassError
 ## *
 ##  Sets an "double" in a user defined type at the specified index.
 ## 
@@ -6356,7 +6356,7 @@ proc cass_user_type_set_float_by_name_n*(user_type: ptr CassUserType; name: cstr
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_user_type_set_double*(user_type: ptr CassUserType; index: csize;
+proc cass_user_type_set_double*(user_type: ptr CassUserType; index: csize_t;
                                value: cass_double_t): CassError
 ## *
 ##  Sets an "double" in a user defined type at the specified name.
@@ -6391,7 +6391,7 @@ proc cass_user_type_set_double_by_name*(user_type: ptr CassUserType; name: cstri
 ## 
 
 proc cass_user_type_set_double_by_name_n*(user_type: ptr CassUserType;
-    name: cstring; name_length: csize; value: cass_double_t): CassError
+    name: cstring; name_length: csize_t; value: cass_double_t): CassError
 ## *
 ##  Sets a "boolean" in a user defined type at the specified index.
 ## 
@@ -6405,7 +6405,7 @@ proc cass_user_type_set_double_by_name_n*(user_type: ptr CassUserType;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_user_type_set_bool*(user_type: ptr CassUserType; index: csize;
+proc cass_user_type_set_bool*(user_type: ptr CassUserType; index: csize_t;
                              value: cass_bool_t): CassError
 ## *
 ##  Sets a "boolean" in a user defined type at the specified name.
@@ -6440,7 +6440,7 @@ proc cass_user_type_set_bool_by_name*(user_type: ptr CassUserType; name: cstring
 ## 
 
 proc cass_user_type_set_bool_by_name_n*(user_type: ptr CassUserType; name: cstring;
-                                       name_length: csize; value: cass_bool_t): CassError
+                                       name_length: csize_t; value: cass_bool_t): CassError
 ## *
 ##  Sets an "ascii", "text" or "varchar" in a user defined type at the
 ##  specified index.
@@ -6455,7 +6455,7 @@ proc cass_user_type_set_bool_by_name_n*(user_type: ptr CassUserType; name: cstri
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_user_type_set_string*(user_type: ptr CassUserType; index: csize;
+proc cass_user_type_set_string*(user_type: ptr CassUserType; index: csize_t;
                                value: cstring): CassError
 ## *
 ##  Same as cass_user_type_set_string(), but with lengths for string
@@ -6474,8 +6474,8 @@ proc cass_user_type_set_string*(user_type: ptr CassUserType; index: csize;
 ##  @see cass_user_type_set_string()
 ## 
 
-proc cass_user_type_set_string_n*(user_type: ptr CassUserType; index: csize;
-                                 value: cstring; value_length: csize): CassError
+proc cass_user_type_set_string_n*(user_type: ptr CassUserType; index: csize_t;
+                                 value: cstring; value_length: csize_t): CassError
 ## *
 ##  Sets an "ascii", "text" or "varchar" in a user defined type at the
 ##  specified name.
@@ -6511,7 +6511,7 @@ proc cass_user_type_set_string_by_name*(user_type: ptr CassUserType; name: cstri
 ## 
 
 proc cass_user_type_set_string_by_name_n*(user_type: ptr CassUserType;
-    name: cstring; name_length: csize; value: cstring; value_length: csize): CassError
+    name: cstring; name_length: csize_t; value: cstring; value_length: csize_t): CassError
 ## *
 ##  Sets a "blob" "varint" or "custom" in a user defined type at the specified index.
 ## 
@@ -6526,8 +6526,8 @@ proc cass_user_type_set_string_by_name_n*(user_type: ptr CassUserType;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_user_type_set_bytes*(user_type: ptr CassUserType; index: csize;
-                              value: ptr cass_byte_t; value_size: csize): CassError
+proc cass_user_type_set_bytes*(user_type: ptr CassUserType; index: csize_t;
+                              value: ptr cass_byte_t; value_size: csize_t): CassError
 ## *
 ##  Sets a "blob", "varint" or "custom" in a user defined type at the specified name.
 ## 
@@ -6543,7 +6543,7 @@ proc cass_user_type_set_bytes*(user_type: ptr CassUserType; index: csize;
 ## 
 
 proc cass_user_type_set_bytes_by_name*(user_type: ptr CassUserType; name: cstring;
-                                      value: ptr cass_byte_t; value_size: csize): CassError
+                                      value: ptr cass_byte_t; value_size: csize_t): CassError
 ## *
 ##  Same as cass_user_type_set_bytes_by_name(), but with lengths for string
 ##  parameters.
@@ -6563,8 +6563,8 @@ proc cass_user_type_set_bytes_by_name*(user_type: ptr CassUserType; name: cstrin
 ## 
 
 proc cass_user_type_set_bytes_by_name_n*(user_type: ptr CassUserType; name: cstring;
-                                        name_length: csize;
-                                        value: ptr cass_byte_t; value_size: csize): CassError
+                                        name_length: csize_t;
+                                        value: ptr cass_byte_t; value_size: csize_t): CassError
 ## *
 ##  Sets a "custom" in a user defined type at the specified index.
 ## 
@@ -6578,9 +6578,9 @@ proc cass_user_type_set_bytes_by_name_n*(user_type: ptr CassUserType; name: cstr
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_user_type_set_custom*(user_type: ptr CassUserType; index: csize;
+proc cass_user_type_set_custom*(user_type: ptr CassUserType; index: csize_t;
                                class_name: cstring; value: ptr cass_byte_t;
-                               value_size: csize): CassError
+                               value_size: csize_t): CassError
 ## *
 ##  Same as cass_user_type_set_custom(), but with lengths for string
 ##  parameters.
@@ -6598,9 +6598,9 @@ proc cass_user_type_set_custom*(user_type: ptr CassUserType; index: csize;
 ##  @see cass_user_type_set_custom()
 ## 
 
-proc cass_user_type_set_custom_n*(user_type: ptr CassUserType; index: csize;
-                                 class_name: cstring; class_name_length: csize;
-                                 value: ptr cass_byte_t; value_size: csize): CassError
+proc cass_user_type_set_custom_n*(user_type: ptr CassUserType; index: csize_t;
+                                 class_name: cstring; class_name_length: csize_t;
+                                 value: ptr cass_byte_t; value_size: csize_t): CassError
 ## *
 ##  Sets a "custom" in a user defined type at the specified name.
 ## 
@@ -6616,7 +6616,7 @@ proc cass_user_type_set_custom_n*(user_type: ptr CassUserType; index: csize;
 
 proc cass_user_type_set_custom_by_name*(user_type: ptr CassUserType; name: cstring;
                                        class_name: cstring;
-                                       value: ptr cass_byte_t; value_size: csize): CassError
+                                       value: ptr cass_byte_t; value_size: csize_t): CassError
 ## *
 ##  Same as cass_user_type_set_custom_by_name(), but with lengths for string
 ##  parameters.
@@ -6636,8 +6636,8 @@ proc cass_user_type_set_custom_by_name*(user_type: ptr CassUserType; name: cstri
 ## 
 
 proc cass_user_type_set_custom_by_name_n*(user_type: ptr CassUserType;
-    name: cstring; name_length: csize; class_name: cstring; class_name_length: csize;
-    value: ptr cass_byte_t; value_size: csize): CassError
+    name: cstring; name_length: csize_t; class_name: cstring; class_name_length: csize_t;
+    value: ptr cass_byte_t; value_size: csize_t): CassError
 ## *
 ##  Sets a "uuid" or "timeuuid" in a user defined type at the specified index.
 ## 
@@ -6651,7 +6651,7 @@ proc cass_user_type_set_custom_by_name_n*(user_type: ptr CassUserType;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_user_type_set_uuid*(user_type: ptr CassUserType; index: csize;
+proc cass_user_type_set_uuid*(user_type: ptr CassUserType; index: csize_t;
                              value: CassUuid): CassError
 ## *
 ##  Sets a "uuid" or "timeuuid" in a user defined type at the specified name.
@@ -6686,7 +6686,7 @@ proc cass_user_type_set_uuid_by_name*(user_type: ptr CassUserType; name: cstring
 ## 
 
 proc cass_user_type_set_uuid_by_name_n*(user_type: ptr CassUserType; name: cstring;
-                                       name_length: csize; value: CassUuid): CassError
+                                       name_length: csize_t; value: CassUuid): CassError
 ## *
 ##  Sets a "inet" in a user defined type at the specified index.
 ## 
@@ -6700,7 +6700,7 @@ proc cass_user_type_set_uuid_by_name_n*(user_type: ptr CassUserType; name: cstri
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_user_type_set_inet*(user_type: ptr CassUserType; index: csize;
+proc cass_user_type_set_inet*(user_type: ptr CassUserType; index: csize_t;
                              value: CassInet): CassError
 ## *
 ##  Sets a "inet" in a user defined type at the specified name.
@@ -6735,7 +6735,7 @@ proc cass_user_type_set_inet_by_name*(user_type: ptr CassUserType; name: cstring
 ## 
 
 proc cass_user_type_set_inet_by_name_n*(user_type: ptr CassUserType; name: cstring;
-                                       name_length: csize; value: CassInet): CassError
+                                       name_length: csize_t; value: CassInet): CassError
 ## *
 ##  Sets an "decimal" in a user defined type at the specified index.
 ## 
@@ -6751,8 +6751,8 @@ proc cass_user_type_set_inet_by_name_n*(user_type: ptr CassUserType; name: cstri
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_user_type_set_decimal*(user_type: ptr CassUserType; index: csize;
-                                varint: ptr cass_byte_t; varint_size: csize;
+proc cass_user_type_set_decimal*(user_type: ptr CassUserType; index: csize_t;
+                                varint: ptr cass_byte_t; varint_size: csize_t;
                                 scale: cint): CassError
 ## *
 ##  Sets "decimal" in a user defined type at the specified name.
@@ -6771,7 +6771,7 @@ proc cass_user_type_set_decimal*(user_type: ptr CassUserType; index: csize;
 
 proc cass_user_type_set_decimal_by_name*(user_type: ptr CassUserType; name: cstring;
                                         varint: ptr cass_byte_t;
-                                        varint_size: csize; scale: cint): CassError
+                                        varint_size: csize_t; scale: cint): CassError
 ## *
 ##  Same as cass_user_type_set_decimal_by_name(), but with lengths for string
 ##  parameters.
@@ -6792,7 +6792,7 @@ proc cass_user_type_set_decimal_by_name*(user_type: ptr CassUserType; name: cstr
 ## 
 
 proc cass_user_type_set_decimal_by_name_n*(user_type: ptr CassUserType;
-    name: cstring; name_length: csize; varint: ptr cass_byte_t; varint_size: csize;
+    name: cstring; name_length: csize_t; varint: ptr cass_byte_t; varint_size: csize_t;
     scale: cint): CassError
 ## *
 ##  Sets a "duration" in a user defined type at the specified index.
@@ -6809,7 +6809,7 @@ proc cass_user_type_set_decimal_by_name_n*(user_type: ptr CassUserType;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_user_type_set_duration*(user_type: ptr CassUserType; index: csize;
+proc cass_user_type_set_duration*(user_type: ptr CassUserType; index: csize_t;
                                  months: int32; days: int32; nanos: int64): CassError
 ## *
 ##  Sets "duration" in a user defined type at the specified name.
@@ -6848,7 +6848,7 @@ proc cass_user_type_set_duration_by_name*(user_type: ptr CassUserType;
 ## 
 
 proc cass_user_type_set_duration_by_name_n*(user_type: ptr CassUserType;
-    name: cstring; name_length: csize; months: int32; days: int32; nanos: int64): CassError
+    name: cstring; name_length: csize_t; months: int32; days: int32; nanos: int64): CassError
 ## *
 ##  Sets a "list", "map" or "set" in a user defined type at the
 ##  specified index.
@@ -6863,7 +6863,7 @@ proc cass_user_type_set_duration_by_name_n*(user_type: ptr CassUserType;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_user_type_set_collection*(user_type: ptr CassUserType; index: csize;
+proc cass_user_type_set_collection*(user_type: ptr CassUserType; index: csize_t;
                                    value: ptr CassCollection): CassError
 ## *
 ##  Sets a "list", "map" or "set" in a user defined type at the
@@ -6899,7 +6899,7 @@ proc cass_user_type_set_collection_by_name*(user_type: ptr CassUserType;
 ## 
 
 proc cass_user_type_set_collection_by_name_n*(user_type: ptr CassUserType;
-    name: cstring; name_length: csize; value: ptr CassCollection): CassError
+    name: cstring; name_length: csize_t; value: ptr CassCollection): CassError
 ## *
 ##  Sets a "tuple" in a user defined type at the specified index.
 ## 
@@ -6913,7 +6913,7 @@ proc cass_user_type_set_collection_by_name_n*(user_type: ptr CassUserType;
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_user_type_set_tuple*(user_type: ptr CassUserType; index: csize;
+proc cass_user_type_set_tuple*(user_type: ptr CassUserType; index: csize_t;
                               value: ptr CassTuple): CassError
 ## *
 ##  Sets a "tuple" in a user defined type at the specified name.
@@ -6948,7 +6948,7 @@ proc cass_user_type_set_tuple_by_name*(user_type: ptr CassUserType; name: cstrin
 ## 
 
 proc cass_user_type_set_tuple_by_name_n*(user_type: ptr CassUserType; name: cstring;
-                                        name_length: csize; value: ptr CassTuple): CassError
+                                        name_length: csize_t; value: ptr CassTuple): CassError
 ## *
 ##  Sets a user defined type in a user defined type at the specified index.
 ## 
@@ -6962,7 +6962,7 @@ proc cass_user_type_set_tuple_by_name_n*(user_type: ptr CassUserType; name: cstr
 ##  @return CASS_OK if successful, otherwise an error occurred.
 ## 
 
-proc cass_user_type_set_user_type*(user_type: ptr CassUserType; index: csize;
+proc cass_user_type_set_user_type*(user_type: ptr CassUserType; index: csize_t;
                                   value: ptr CassUserType): CassError
 ## *
 ##  Sets a user defined type in a user defined type at the specified name.
@@ -6997,7 +6997,7 @@ proc cass_user_type_set_user_type_by_name*(user_type: ptr CassUserType;
 ## 
 
 proc cass_user_type_set_user_type_by_name_n*(user_type: ptr CassUserType;
-    name: cstring; name_length: csize; value: ptr CassUserType): CassError
+    name: cstring; name_length: csize_t; value: ptr CassUserType): CassError
 ## **********************************************************************************
 ## 
 ##  Result
@@ -7024,7 +7024,7 @@ proc cass_result_free*(result: ptr CassResult)
 ##  @return The number of rows in the result.
 ## 
 
-proc cass_result_row_count*(result: ptr CassResult): csize
+proc cass_result_row_count*(result: ptr CassResult): csize_t
 ## *
 ##  Gets the number of columns per row for the specified result.
 ## 
@@ -7034,7 +7034,7 @@ proc cass_result_row_count*(result: ptr CassResult): csize
 ##  @return The number of columns per row in the result.
 ## 
 
-proc cass_result_column_count*(result: ptr CassResult): csize
+proc cass_result_column_count*(result: ptr CassResult): csize_t
 ## *
 ##  Gets the column name at index for the specified result.
 ## 
@@ -7047,8 +7047,8 @@ proc cass_result_column_count*(result: ptr CassResult): csize
 ##  @return CASS_OK if successful, otherwise error occurred
 ## 
 
-proc cass_result_column_name*(result: ptr CassResult; index: csize;
-                             name: cstringArray; name_length: ptr csize): CassError
+proc cass_result_column_name*(result: ptr CassResult; index: csize_t;
+                             name: cstringArray; name_length: ptr csize_t): CassError
 ## *
 ##  Gets the column type at index for the specified result.
 ## 
@@ -7060,7 +7060,7 @@ proc cass_result_column_name*(result: ptr CassResult; index: csize;
 ##  is returned if the index is out of bounds.
 ## 
 
-proc cass_result_column_type*(result: ptr CassResult; index: csize): CassValueType
+proc cass_result_column_type*(result: ptr CassResult; index: csize_t): CassValueType
 ## *
 ##  Gets the column data type at index for the specified result.
 ## 
@@ -7072,7 +7072,7 @@ proc cass_result_column_type*(result: ptr CassResult; index: csize): CassValueTy
 ##  index is out of bounds.
 ## 
 
-proc cass_result_column_data_type*(result: ptr CassResult; index: csize): ptr CassDataType
+proc cass_result_column_data_type*(result: ptr CassResult; index: csize_t): ptr CassDataType
 ## *
 ##  Gets the first row of the result.
 ## 
@@ -7118,7 +7118,7 @@ proc cass_result_has_more_pages*(result: ptr CassResult): cass_bool_t
 
 proc cass_result_paging_state_token*(result: ptr CassResult;
                                     paging_state: cstringArray;
-                                    paging_state_size: ptr csize): CassError
+                                    paging_state_size: ptr csize_t): CassError
 ## **********************************************************************************
 ## 
 ##  Error result
@@ -7273,7 +7273,7 @@ proc cass_error_result_write_type*(error_result: ptr CassErrorResult): CassWrite
 ## 
 
 proc cass_error_result_keyspace*(error_result: ptr CassErrorResult;
-                                keyspace: cstringArray; keyspace_length: ptr csize): CassError
+                                keyspace: cstringArray; keyspace_length: ptr csize_t): CassError
 ## *
 ##  Gets the affected table for the already exists error
 ##  (CASS_ERROR_SERVER_ALREADY_EXISTS) result type.
@@ -7287,7 +7287,7 @@ proc cass_error_result_keyspace*(error_result: ptr CassErrorResult;
 ## 
 
 proc cass_error_result_table*(error_result: ptr CassErrorResult;
-                             table: cstringArray; table_length: ptr csize): CassError
+                             table: cstringArray; table_length: ptr csize_t): CassError
 ## *
 ##  Gets the affected function for the function failure error
 ##  (CASS_ERROR_SERVER_FUNCTION_FAILURE) result type.
@@ -7303,7 +7303,7 @@ proc cass_error_result_table*(error_result: ptr CassErrorResult;
 ## 
 
 proc cass_error_result_function*(error_result: ptr CassErrorResult;
-                                function: cstringArray; function_length: ptr csize): CassError
+                                function: cstringArray; function_length: ptr csize_t): CassError
 ## *
 ##  Gets the number of argument types for the function failure error
 ##  (CASS_ERROR_SERVER_FUNCTION_FAILURE) result type.
@@ -7316,7 +7316,7 @@ proc cass_error_result_function*(error_result: ptr CassErrorResult;
 ##  @return The number of arguments for the affected function.
 ## 
 
-proc cass_error_num_arg_types*(error_result: ptr CassErrorResult): csize
+proc cass_error_num_arg_types*(error_result: ptr CassErrorResult): csize_t
 ## *
 ##  Gets the argument type at the specified index for the function failure
 ##  error (CASS_ERROR_SERVER_FUNCTION_FAILURE) result type.
@@ -7332,8 +7332,8 @@ proc cass_error_num_arg_types*(error_result: ptr CassErrorResult): csize
 ##  @return CASS_OK if successful, otherwise error occurred
 ## 
 
-proc cass_error_result_arg_type*(error_result: ptr CassErrorResult; index: csize;
-                                arg_type: cstringArray; arg_type_length: ptr csize): CassError
+proc cass_error_result_arg_type*(error_result: ptr CassErrorResult; index: csize_t;
+                                arg_type: cstringArray; arg_type_length: ptr csize_t): CassError
 ## **********************************************************************************
 ## 
 ##  Iterator
@@ -7819,7 +7819,7 @@ proc cass_iterator_get_map_value*(`iterator`: ptr CassIterator): ptr CassValue
 ## 
 
 proc cass_iterator_get_user_type_field_name*(`iterator`: ptr CassIterator;
-    name: cstringArray; name_length: ptr csize): CassError
+    name: cstringArray; name_length: ptr csize_t): CassError
 ## *
 ##  Gets the field value at the user type defined iterator's current position.
 ## 
@@ -7962,7 +7962,7 @@ proc cass_iterator_get_index_meta*(`iterator`: ptr CassIterator): ptr CassIndexM
 ## 
 
 proc cass_iterator_get_meta_field_name*(`iterator`: ptr CassIterator;
-                                       name: cstringArray; name_length: ptr csize): CassError
+                                       name: cstringArray; name_length: ptr csize_t): CassError
 ## *
 ##  Gets the metadata field value at the iterator's current position.
 ## 
@@ -7992,7 +7992,7 @@ proc cass_iterator_get_meta_field_value*(`iterator`: ptr CassIterator): ptr Cass
 ##  returned if the index is out of bounds.
 ## 
 
-proc cass_row_get_column*(row: ptr CassRow; index: csize): ptr CassValue
+proc cass_row_get_column*(row: ptr CassRow; index: csize_t): ptr CassValue
 ## *
 ##  Get the column value by name for the specified row.
 ## 
@@ -8020,7 +8020,7 @@ proc cass_row_get_column_by_name*(row: ptr CassRow; name: cstring): ptr CassValu
 ## 
 
 proc cass_row_get_column_by_name_n*(row: ptr CassRow; name: cstring;
-                                   name_length: csize): ptr CassValue
+                                   name_length: csize_t): ptr CassValue
 ## **********************************************************************************
 ## 
 ##  Value
@@ -8165,7 +8165,7 @@ proc cass_value_get_inet*(value: ptr CassValue; output: ptr CassInet): CassError
 ## 
 
 proc cass_value_get_string*(value: ptr CassValue; output: cstringArray;
-                           output_size: ptr csize): CassError
+                           output_size: ptr csize_t): CassError
 ## *
 ##  Gets the bytes of the specified value.
 ## 
@@ -8178,7 +8178,7 @@ proc cass_value_get_string*(value: ptr CassValue; output: cstringArray;
 ## 
 
 proc cass_value_get_bytes*(value: ptr CassValue; output: ptr ptr cass_byte_t;
-                          output_size: ptr csize): CassError
+                          output_size: ptr csize_t): CassError
 ## *
 ##  Gets a decimal for the specified value.
 ## 
@@ -8192,7 +8192,7 @@ proc cass_value_get_bytes*(value: ptr CassValue; output: ptr ptr cass_byte_t;
 ## 
 
 proc cass_value_get_decimal*(value: ptr CassValue; varint: ptr ptr cass_byte_t;
-                            varint_size: ptr csize; scale: ptr int32): CassError
+                            varint_size: ptr csize_t; scale: ptr int32): CassError
 ## *
 ##  Gets a duration for the specified value.
 ## 
@@ -8258,7 +8258,7 @@ proc cass_value_is_duration*(value: ptr CassValue): cass_bool_t
 ##  @return Count of items in a collection. 0 if not a collection.
 ## 
 
-proc cass_value_item_count*(collection: ptr CassValue): csize
+proc cass_value_item_count*(collection: ptr CassValue): csize_t
 ## *
 ##  Get the primary sub-type for a collection. This returns the sub-type for a
 ##  list or set and the key type for a map.
@@ -8445,7 +8445,7 @@ proc cass_uuid_from_string*(str: cstring; output: ptr CassUuid): CassError
 ##  @see cass_uuid_from_string()
 ## 
 
-proc cass_uuid_from_string_n*(str: cstring; str_length: csize; output: ptr CassUuid): CassError
+proc cass_uuid_from_string_n*(str: cstring; str_length: csize_t; output: ptr CassUuid): CassError
 ## **********************************************************************************
 ## 
 ##  Timestamp generators
@@ -8665,7 +8665,7 @@ proc cass_custom_payload_free*(payload: ptr CassCustomPayload)
 ## 
 
 proc cass_custom_payload_set*(payload: ptr CassCustomPayload; name: cstring;
-                             value: ptr cass_byte_t; value_size: csize)
+                             value: ptr cass_byte_t; value_size: csize_t)
 ## *
 ##  Same as cass_custom_payload_set(), but with lengths for string
 ##  parameters.
@@ -8682,8 +8682,8 @@ proc cass_custom_payload_set*(payload: ptr CassCustomPayload; name: cstring;
 ## 
 
 proc cass_custom_payload_set_n*(payload: ptr CassCustomPayload; name: cstring;
-                               name_length: csize; value: ptr cass_byte_t;
-                               value_size: csize)
+                               name_length: csize_t; value: ptr cass_byte_t;
+                               value_size: csize_t)
 ## *
 ##  Removes an item from the custom payload.
 ## 
@@ -8710,7 +8710,7 @@ proc cass_custom_payload_remove*(payload: ptr CassCustomPayload; name: cstring)
 ## 
 
 proc cass_custom_payload_remove_n*(payload: ptr CassCustomPayload; name: cstring;
-                                  name_length: csize)
+                                  name_length: csize_t)
 ## **********************************************************************************
 ## 
 ##  Consistency
@@ -8807,7 +8807,7 @@ proc cass_log_set_callback*(callback: CassLogCallback; data: pointer)
 ##  @param[in] queue_size
 ## 
 
-proc cass_log_set_queue_size*(queue_size: csize)
+proc cass_log_set_queue_size*(queue_size: csize_t)
 ## *
 ##  Gets the string for a log level.
 ## 
@@ -8878,7 +8878,7 @@ proc cass_inet_from_string*(str: cstring; output: ptr CassInet): CassError
 ##  @see cass_inet_from_string()
 ## 
 
-proc cass_inet_from_string_n*(str: cstring; str_length: csize; output: ptr CassInet): CassError
+proc cass_inet_from_string_n*(str: cstring; str_length: csize_t; output: ptr CassInet): CassError
 ## **********************************************************************************
 ## 
 ##  Date/Time
