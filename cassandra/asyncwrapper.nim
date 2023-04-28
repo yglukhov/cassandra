@@ -99,7 +99,7 @@ proc dispatch_cas_future_main_thread(data: pointer) {.inline.} =
     let rc = cass_future_error_code(casF)
     if rc != CASS_OK:
         var cmsg: cstring
-        var sz: csize
+        var sz: csize_t
         cass_future_error_message(casF, cast[cstringArray](addr cmsg), addr sz)
         let msg = $cmsg
         let e = newException(CassandraException, "future exception: " & msg)
@@ -152,7 +152,7 @@ proc raiseCassException(err: CassError) =
 
 proc newStmt(query: string, params_count: int): Statement =
     result.new(finalize)
-    result.o = cass_statement_new_n(query, query.len, csize(params_count))
+    result.o = cass_statement_new_n(query, csize_t(query.len), csize_t(params_count))
 
 proc newStatement*(query: string, params_count: int): Statement {.inline.} =
     newStmt(query, params_count)
@@ -169,7 +169,7 @@ template chck(e: untyped) =
     if err != CASS_OK: raiseCassException(err)
 
 proc setContactPoints*(cluster: Cluster, hosts: string) {.inline.} =
-    chck cass_cluster_set_contact_points_n(cluster, hosts, hosts.len)
+    chck cass_cluster_set_contact_points_n(cluster, hosts, csize_t(hosts.len))
 
 proc setPort*(cluster: Cluster, port: int) {.inline.} =
     chck cass_cluster_set_port(cluster, cint(port))
@@ -226,14 +226,14 @@ proc setResolveTimeout*(cluster: Cluster, timeout_ms: int) {.inline.} =
     cass_cluster_set_resolve_timeout(cluster, cuint(timeout_ms))
 
 proc setCredentials*(cluster: Cluster, username, password: string) {.inline.} =
-    cass_cluster_set_credentials_n(cluster, username, username.len, password, password.len)
+    cass_cluster_set_credentials_n(cluster, username, csize_t(username.len), password, csize_t(password.len))
 
 proc setLoadBalanceRoundRobin*(cluster: Cluster) {.inline.} =
     cass_cluster_set_load_balance_round_robin(cluster)
 
 proc setLoadBalanceDCAware*(cluster: Cluster, local_dc: string; used_hosts_per_remote_dc: int;
         allow_remote_dcs_for_local_cl: bool) {.inline.} =
-    chck cass_cluster_set_load_balance_dc_aware_n(cluster, local_dc, local_dc.len,
+    chck cass_cluster_set_load_balance_dc_aware_n(cluster, local_dc, csize_t(local_dc.len),
         cuint(used_hosts_per_remote_dc), cass_bool_t(allow_remote_dcs_for_local_cl))
 
 proc setTokenAwareRouting*(cluster: Cluster, enabled: bool) {.inline.} =
@@ -248,16 +248,16 @@ proc setLatencyAwareRoutingSettings*(cluster: Cluster, exclusion_threshold: floa
         scale_ms, retry_period_ms, update_rate_ms, min_measured)
 
 proc setWhitelistFiltering*(cluster: Cluster, hosts: string) {.inline.} =
-    cass_cluster_set_whitelist_filtering_n(cluster, hosts, hosts.len)
+    cass_cluster_set_whitelist_filtering_n(cluster, hosts, csize_t(hosts.len))
 
 proc setBlacklistFiltering*(cluster: Cluster, hosts: string) {.inline.} =
-    cass_cluster_set_blacklist_filtering_n(cluster, hosts, hosts.len)
+    cass_cluster_set_blacklist_filtering_n(cluster, hosts, csize_t(hosts.len))
 
 proc setWhitelistDCFiltering*(cluster: Cluster, dcs: string) {.inline.} =
-    cass_cluster_set_whitelist_dc_filtering_n(cluster, dcs, dcs.len)
+    cass_cluster_set_whitelist_dc_filtering_n(cluster, dcs, csize_t(dcs.len))
 
 proc setBlacklistDCFiltering*(cluster: Cluster, dcs: string) {.inline.} =
-    cass_cluster_set_blacklist_dc_filtering_n(cluster, dcs, dcs.len)
+    cass_cluster_set_blacklist_dc_filtering_n(cluster, dcs, csize_t(dcs.len))
 
 proc setTCPNodelay*(cluster: Cluster, enabled: bool) {.inline.} =
     cass_cluster_set_tcp_nodelay(cluster, cass_bool_t(enabled))
@@ -322,58 +322,58 @@ proc execute*(session: Session, statement: Statement): Future[Result] {.inline.}
     result.make(cass_session_execute(session, statement), session, statement)
 
 proc bindParam*(statement: Statement, idx: int, v: int8) {.inline.} =
-    chck cass_statement_bind_int8(statement, csize(idx), v)
+    chck cass_statement_bind_int8(statement, csize_t(idx), v)
 
 proc bindParam*(statement: Statement, name: string, v: int8) {.inline.} =
-    chck cass_statement_bind_int8_by_name_n(statement, name, name.len, v)
+    chck cass_statement_bind_int8_by_name_n(statement, name, csize_t(name.len), v)
 
 proc bindParam*(statement: Statement, idx: int, v: int16) {.inline.} =
-    chck cass_statement_bind_int16(statement, csize(idx), v)
+    chck cass_statement_bind_int16(statement, csize_t(idx), v)
 
 proc bindParam*(statement: Statement, name: string, v: int16) {.inline.} =
-    chck cass_statement_bind_int16_by_name_n(statement, name, name.len, v)
+    chck cass_statement_bind_int16_by_name_n(statement, name, csize_t(name.len), v)
 
 proc bindParam*(statement: Statement, idx: int, v: int32) {.inline.} =
-    chck cass_statement_bind_int32(statement, csize(idx), v)
+    chck cass_statement_bind_int32(statement, csize_t(idx), v)
 
 proc bindParam*(statement: Statement, name: string, v: int32) {.inline.} =
-    chck cass_statement_bind_int32_by_name_n(statement, name, name.len, v)
+    chck cass_statement_bind_int32_by_name_n(statement, name, csize_t(name.len), v)
 
 proc bindParam*(statement: Statement, idx: int, v: uint32) {.inline.} =
-    chck cass_statement_bind_uint32(statement, csize(idx), v)
+    chck cass_statement_bind_uint32(statement, csize_t(idx), v)
 
 proc bindParam*(statement: Statement, name: string, v: uint32) {.inline.} =
-    chck cass_statement_bind_uint32_by_name_n(statement, name, name.len, v)
+    chck cass_statement_bind_uint32_by_name_n(statement, name, csize_t(name.len), v)
 
 proc bindParam*(statement: Statement, idx: int, v: int64) {.inline.} =
-    chck cass_statement_bind_int64(statement, csize(idx), v)
+    chck cass_statement_bind_int64(statement, csize_t(idx), v)
 
 proc bindParam*(statement: Statement, name: string, v: int64) {.inline.} =
-    chck cass_statement_bind_int64_by_name_n(statement, name, name.len, v)
+    chck cass_statement_bind_int64_by_name_n(statement, name, csize_t(name.len), v)
 
 proc bindParam*(statement: Statement, idx: int, v: float32) {.inline.} =
-    chck cass_statement_bind_float(statement, csize(idx), v)
+    chck cass_statement_bind_float(statement, csize_t(idx), v)
 
 proc bindParam*(statement: Statement, name: string, v: float32) {.inline.} =
-    chck cass_statement_bind_float_by_name_n(statement, name, name.len, v)
+    chck cass_statement_bind_float_by_name_n(statement, name, csize_t(name.len), v)
 
 proc bindParam*(statement: Statement, idx: int, v: float64) {.inline.} =
-    chck cass_statement_bind_double(statement, csize(idx), v)
+    chck cass_statement_bind_double(statement, csize_t(idx), v)
 
 proc bindParam*(statement: Statement, name: string, v: float64) {.inline.} =
-    chck cass_statement_bind_double_by_name_n(statement, name, name.len, v)
+    chck cass_statement_bind_double_by_name_n(statement, name, csize_t(name.len), v)
 
 proc bindParam*(statement: Statement, idx: int, v: bool) {.inline.} =
-    chck cass_statement_bind_bool(statement, csize(idx), cass_bool_t(v))
+    chck cass_statement_bind_bool(statement, csize_t(idx), cass_bool_t(v))
 
 proc bindParam*(statement: Statement, name: string, v: bool) {.inline.} =
-    chck cass_statement_bind_bool_by_name_n(statement, name, name.len, cass_bool_t(v))
+    chck cass_statement_bind_bool_by_name_n(statement, name, csize_t(name.len), cass_bool_t(v))
 
 proc bindParam*(statement: Statement, idx: int, v: string) {.inline.} =
-    chck cass_statement_bind_string_n(statement, csize(idx), v, v.len)
+    chck cass_statement_bind_string_n(statement, csize_t(idx), v, csize_t(v.len))
 
 proc bindParam*(statement: Statement, name, v: string) {.inline.} =
-    chck cass_statement_bind_string_by_name_n(statement, name, name.len, v, v.len)
+    chck cass_statement_bind_string_by_name_n(statement, name, csize_t(name.len), v, csize_t(v.len))
 
 template `[]=`*[T](statement: Statement, idx: int, v: T) =
     statement.bindParam(idx, v)
@@ -390,11 +390,11 @@ type ColumnsCollection = distinct Row
 template columns*(r: Row): ColumnsCollection = ColumnsCollection(r)
 
 proc `[]`*(cc: ColumnsCollection, name: string): Value {.inline.} =
-    result.o = cass_row_get_column_by_name_n(Row(cc).o, name, name.len)
+    result.o = cass_row_get_column_by_name_n(Row(cc).o, name, csize_t(name.len))
     result.gcHold = Row(cc).gcHold
 
 proc `[]`*(cc: ColumnsCollection, idx: int): Value {.inline.} =
-    result.o = cass_row_get_column(Row(cc).o, idx)
+    result.o = cass_row_get_column(Row(cc).o, csize_t(idx))
     result.gcHold = Row(cc).gcHold
 
 proc kind*(v: Value): CassValueType {.inline.} = cass_value_type(v.o)
@@ -404,7 +404,7 @@ proc getMapValue*(m: Value, key: string): Value =
     while cass_iterator_next(it) != cass_false:
         let k = cass_iterator_get_map_key(it)
         var c: cstring
-        var sz: csize
+        var sz: csize_t
 
         if cass_value_get_string(k, cast[cstringArray](addr c), addr sz) == CASS_OK:
             if key == c:
@@ -415,7 +415,7 @@ proc getMapValue*(m: Value, key: string): Value =
 
 converter toString*(v: Value): string =
     var c: cstring
-    var sz: csize
+    var sz: csize_t
     chck cass_value_get_string(v.o, cast[cstringArray](addr c), addr sz)
     result = newString(sz)
     if sz > 0:
