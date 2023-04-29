@@ -5,5 +5,9 @@ when defined(linux):
 elif defined(macosx):
     {.passL: "-lc++".}
 
-{.passL: "-lcassandra_static".}
+when defined(useDynamic):
+  {.passL: "-lcassandra".}
+else:
+  {.passL: "-lcassandra_static".}
+
 {.passL: "-luv".}
