@@ -5,5 +5,4 @@ when defined(linux):
 elif defined(macosx):
     {.passL: "-lc++".}
 
-{.passL: "-lcassandra_static".}
 {.passL: "-luv".}

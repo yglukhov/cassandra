@@ -775,7 +775,7 @@ type
     cleanup_callback*: CassAuthenticatorCleanupCallback
 
 
-{.push importc.}
+{.push importc, dynlib: "libcassandra.so".}
 ## **********************************************************************************
 ## 
 ##  Cluster
