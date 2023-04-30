@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  Test:
+    if: |
+      !contains(github.event.head_commit.message, '[skip ci]')
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        nim-channel: [stable, devel]
+
+    name: ${{ matrix.os }}-${{ matrix.nim-channel }}
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup DataStax C/C++ Driver
+      run: |
+        # Install dependencies
+        sudo apt update && sudo apt install -y libssl-dev libkrb5-3 zlib1g libuv1-dev
+        # Install the runtime library v2.16.2
+        wget https://datastax.jfrog.io/artifactory/cpp-php-drivers/cpp-driver/builds/2.16.2/90df2c9/ubuntu/18.04/cassandra/v2.16.2/cassandra-cpp-driver_2.16.2-1_amd64.deb
+        sudo dpkg -i cassandra-cpp-driver_2.16.2-1_amd64.deb
+        wget https://datastax.jfrog.io/artifactory/cpp-php-drivers/cpp-driver/builds/2.16.2/90df2c9/ubuntu/18.04/cassandra/v2.16.2/cassandra-cpp-driver-dev_2.16.2-1_amd64.deb
+        sudo dpkg -i cassandra-cpp-driver-dev_2.16.2-1_amd64.deb
+
+    - name: Start Cassandra
+      run: |
+        docker run -d -p 9042:9042 --name cassandra cassandra:latest
+        # Wait for the cassandra to be ready
+        docker exec cassandra sh -c "while ! cqlsh -e 'describe cluster'; do sleep 1; done"
+
+    - name: Setup nim
+      uses: jiro4989/setup-nim-action@v1
+      with:
+        nim-version: ${{ matrix.nim-channel }}
+
+    - name: Test
+      run: |
+        nimble test
