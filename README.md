@@ -1,4 +1,4 @@
-# cassandra [![Build Status](https://travis-ci.org/yglukhov/cassandra.svg?branch=master)](https://travis-ci.org/yglukhov/cassandra)
+# cassandra [![Build Status](https://github.com/yglukhov/cassandra/workflows/CI/badge.svg?branch=master)](https://github.com/yglukhov/cassandra/actions?query=branch%3Amaster)
 Nim bindings to cassandra db [driver](https://github.com/datastax/cpp-driver)
 
 # Usage

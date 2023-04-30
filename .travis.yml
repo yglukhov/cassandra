@@ -1,7 +1,0 @@
-sudo: required
-services:
-  - docker
-script:
-  - docker run --name some-scylla -d scylladb/scylla
-  - docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' some-scylla > ./scylla_host
-  - docker run -v "$(pwd):/project" -w /project yglukhov/debian-buster-nim-base run sh ./cibuild.sh
