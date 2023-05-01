@@ -1,6 +1,5 @@
-import os
+import std/os
 import ../cassandra/bindings
-import ../cassandra/linker_options
 
 var host = getEnv("CASSANDRA_HOST")
 if host.len == 0: host = "127.0.0.1"
@@ -9,7 +8,7 @@ let cluster = cass_cluster_new()
 let session = cass_session_new()
 
 # Add contact points
-discard cass_cluster_set_contact_points(cluster, host)
+discard cass_cluster_set_contact_points(cluster, cstring(host))
 
 # Provide the cluster object as configuration to connect the session
 let connect_future = cass_session_connect(session, cluster)

@@ -1,5 +1,5 @@
-import bindings, linker_options
-import os, locks, posix, asyncfile, strutils, asyncdispatch
+import bindings
+import std/[locks, posix, asyncfile, strutils, asyncdispatch]
 
 var pipeLock: Lock
 var pipeFd: cint
@@ -63,7 +63,7 @@ type CasFutureData = ref object
     next: CasFutureData
     gcHold1, gcHold2: GcHoldRef
 
-type CassandraException* = object of Exception
+type CassandraException* = object of CatchableError
     casErr*: CassError
 
 var futDataPool: CasFutureData

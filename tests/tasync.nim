@@ -1,4 +1,4 @@
-import os, asyncdispatch
+import std/[os, asyncdispatch]
 import ../cassandra/asyncwrapper
 
 proc test() {.async.} =
