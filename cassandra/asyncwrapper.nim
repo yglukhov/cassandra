@@ -464,6 +464,10 @@ converter toCassUuid*(v: Value): CassUuid =
     chck cass_value_get_uuid(v.o, addr u)
     result = u
 
+
+proc `$`*(d: Duration): string =
+    $d.months & "M" & $d.days & "DT" & $d.nanos & "N"
+
 proc `$`*(u: CassUuid): string =
     var cs = cast[cstring](create(uint8, CASS_UUID_STRING_LENGTH))
     cass_uuid_string(u, cs)
