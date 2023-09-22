@@ -465,7 +465,7 @@ converter toTimeInterval*(v: Value): TimeInterval =
     let micr  = (nanos  div             1_000).int
     nanos     = (nanos  mod             1_000)
     result = initTimeInterval(
-      years = years, months = months,
+      years = years, months = months, days = days,
       hours = hours, minutes = mins, seconds = secs,
       milliseconds = mili, microseconds = micr, nanoseconds = nanos.int
     )
