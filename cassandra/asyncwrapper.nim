@@ -1,5 +1,5 @@
 import bindings
-import std/[locks, posix, asyncfile, strutils, asyncdispatch]
+import std/[locks, posix, asyncfile, strutils, asyncdispatch, times]
 
 var pipeLock: Lock
 var pipeFd: cint
@@ -29,11 +29,6 @@ type
     Value* = object
         o*: ptr CassValue
         gcHold: GcHoldRef
-
-    Duration* = object
-        months*: int32
-        days*: int32
-        nanos*: int64
 
 proc finalize(c: Cluster) = cass_cluster_free(c.o)
 proc finalize(c: Session) = cass_session_free(c.o)
@@ -452,21 +447,33 @@ converter toBool*(v: Value): bool =
     chck cass_value_get_bool(v.o, addr b)
     result = bool(b)
 
-converter toDuration*(v: Value): Duration =
+converter toTimeInterval*(v: Value): TimeInterval =
     var months: int32
     var days: int32
     var nanos: int64
     chck v.o.cass_value_get_duration(addr months, addr days, addr nanos)
-    result = Duration(months: months, days: days, nanos: nanos)
+    let years = (months div                12)
+    months    = (months mod                12)
+    let hours = (nanos  div 3_600_000_000_000).int
+    nanos     = (nanos  mod 3_600_000_000_000)
+    let mins  = (nanos  div    60_000_000_000).int 
+    nanos     = (nanos  mod    60_000_000_000)
+    let secs  = (nanos  div     1_000_000_000).int
+    nanos     = (nanos  mod     1_000_000_000)
+    let mili  = (nanos  div         1_000_000).int
+    nanos     = (nanos  mod         1_000_000)
+    let micr  = (nanos  div             1_000).int
+    nanos     = (nanos  mod             1_000)
+    result = initTimeInterval(
+      years = years, months = months,
+      hours = hours, minutes = mins, seconds = secs,
+      milliseconds = mili, microseconds = micr, nanoseconds = nanos.int
+    )
 
 converter toCassUuid*(v: Value): CassUuid =
     var u: CassUuid
     chck cass_value_get_uuid(v.o, addr u)
     result = u
-
-
-proc `$`*(d: Duration): string =
-    "P" & $d.months & "M" & $d.days & "DT" & $d.nanos & "N"
 
 proc `$`*(u: CassUuid): string =
     var cs = cast[cstring](create(uint8, CASS_UUID_STRING_LENGTH))
@@ -492,7 +499,7 @@ proc `$`*(v: Value): string =
     of CASS_VALUE_TYPE_TIME: $int64(v)   # Nanoseconds since midnight
     of CASS_VALUE_TYPE_SMALL_INT: $int16(v)
     of CASS_VALUE_TYPE_TINY_INT: $int8(v)
-    of CASS_VALUE_TYPE_DURATION: $toDuration(v)
+    of CASS_VALUE_TYPE_DURATION: $toTimeInterval(v)
     of CASS_VALUE_TYPE_LIST: "?LIST?"
     of CASS_VALUE_TYPE_MAP: "?MAP?"
     of CASS_VALUE_TYPE_SET: "?SET?"
