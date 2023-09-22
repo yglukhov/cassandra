@@ -448,6 +448,8 @@ converter toBool*(v: Value): bool =
     result = bool(b)
 
 proc `$`*(v: Value): string =
+    if cass_value_is_null(v.o) == cass_true:
+        return "null"
     case v.kind
     of CASS_VALUE_TYPE_BOOLEAN: $bool(v)
     of CASS_VALUE_TYPE_COUNTER: $int64(v)
