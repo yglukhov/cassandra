@@ -1,5 +1,5 @@
 import bindings
-import std/[locks, posix, asyncfile, strutils, asyncdispatch]
+import std/[locks, posix, asyncfile, strutils, asyncdispatch, times]
 
 var pipeLock: Lock
 var pipeFd: cint
@@ -447,6 +447,47 @@ converter toBool*(v: Value): bool =
     chck cass_value_get_bool(v.o, addr b)
     result = bool(b)
 
+converter toTimeInterval*(v: Value): TimeInterval =
+    var months: int32
+    var days: int32
+    var nanos: int64
+    chck v.o.cass_value_get_duration(addr months, addr days, addr nanos)
+    let years = (months div                12)
+    months    = (months mod                12)
+    let hours = (nanos  div 3_600_000_000_000).int
+    nanos     = (nanos  mod 3_600_000_000_000)
+    let mins  = (nanos  div    60_000_000_000).int 
+    nanos     = (nanos  mod    60_000_000_000)
+    let secs  = (nanos  div     1_000_000_000).int
+    nanos     = (nanos  mod     1_000_000_000)
+    let mili  = (nanos  div         1_000_000).int
+    nanos     = (nanos  mod         1_000_000)
+    let micr  = (nanos  div             1_000).int
+    nanos     = (nanos  mod             1_000)
+    result = initTimeInterval(
+      years = years, months = months, days = days,
+      hours = hours, minutes = mins, seconds = secs,
+      milliseconds = mili, microseconds = micr, nanoseconds = nanos.int
+    )
+
+converter toCassUuid*(v: Value): CassUuid =
+    chck cass_value_get_uuid(v.o, addr result)
+
+converter toCassInet*(v: Value): CassInet =
+    chck cass_value_get_inet(v.o, addr result)
+
+proc `$`*(u: CassUuid): string =
+    var cs = cast[cstring](create(uint8, CASS_UUID_STRING_LENGTH))
+    cass_uuid_string(u, cs)
+    result = $cs
+    cs.dealloc
+
+proc `$`*(i: CassInet): string =
+    var csinet = cast[cstring](create(uint8, CASS_INET_STRING_LENGTH))
+    cass_inet_string(i, csinet)
+    result = $csinet
+    dealloc(csinet)
+
 proc `$`*(v: Value): string =
     if cass_value_is_null(v.o) == cass_true:
         return "null"
@@ -459,15 +500,15 @@ proc `$`*(v: Value): string =
     of CASS_VALUE_TYPE_INT: $int32(v)
     of CASS_VALUE_TYPE_TEXT, CASS_VALUE_TYPE_VARCHAR: string(v)
     of CASS_VALUE_TYPE_TIMESTAMP: "?TIMESTAMP?"
-    of CASS_VALUE_TYPE_UUID: "?UUID?"
+    of CASS_VALUE_TYPE_UUID: $toCassUuid(v)
     of CASS_VALUE_TYPE_VARINT: "?VARINT?"
-    of CASS_VALUE_TYPE_TIMEUUID: "?TIMEUUID?"
-    of CASS_VALUE_TYPE_INET: "?INET?"
-    of CASS_VALUE_TYPE_DATE: "?DATE?"
-    of CASS_VALUE_TYPE_TIME: "?TIME?"
+    of CASS_VALUE_TYPE_TIMEUUID: $toCassUuid(v)
+    of CASS_VALUE_TYPE_INET: $toCassInet(v)
+    of CASS_VALUE_TYPE_DATE: $uint32(v)  # Days since -5877641/6/23 (Y/M/D)
+    of CASS_VALUE_TYPE_TIME: $int64(v)   # Nanoseconds since midnight
     of CASS_VALUE_TYPE_SMALL_INT: $int16(v)
     of CASS_VALUE_TYPE_TINY_INT: $int8(v)
-    of CASS_VALUE_TYPE_DURATION: "?DURATION?"
+    of CASS_VALUE_TYPE_DURATION: $toTimeInterval(v)
     of CASS_VALUE_TYPE_LIST: "?LIST?"
     of CASS_VALUE_TYPE_MAP: "?MAP?"
     of CASS_VALUE_TYPE_SET: "?SET?"
