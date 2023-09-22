@@ -471,15 +471,22 @@ converter toTimeInterval*(v: Value): TimeInterval =
     )
 
 converter toCassUuid*(v: Value): CassUuid =
-    var u: CassUuid
-    chck cass_value_get_uuid(v.o, addr u)
-    result = u
+    chck cass_value_get_uuid(v.o, addr result)
+
+converter toCassInet*(v: Value): CassInet =
+    chck cass_value_get_inet(v.o, addr result)
 
 proc `$`*(u: CassUuid): string =
     var cs = cast[cstring](create(uint8, CASS_UUID_STRING_LENGTH))
     cass_uuid_string(u, cs)
     result = $cs
     cs.dealloc
+
+proc `$`*(i: CassInet): string =
+    var csinet = cast[cstring](create(uint8, CASS_INET_STRING_LENGTH))
+    cass_inet_string(i, csinet)
+    result = $csinet
+    dealloc(csinet)
 
 proc `$`*(v: Value): string =
     case v.kind
@@ -494,7 +501,7 @@ proc `$`*(v: Value): string =
     of CASS_VALUE_TYPE_UUID: $toCassUuid(v)
     of CASS_VALUE_TYPE_VARINT: "?VARINT?"
     of CASS_VALUE_TYPE_TIMEUUID: $toCassUuid(v)
-    of CASS_VALUE_TYPE_INET: "?INET?"
+    of CASS_VALUE_TYPE_INET: $toCassInet(v)
     of CASS_VALUE_TYPE_DATE: $uint32(v)  # Days since -5877641/6/23 (Y/M/D)
     of CASS_VALUE_TYPE_TIME: $int64(v)   # Nanoseconds since midnight
     of CASS_VALUE_TYPE_SMALL_INT: $int16(v)
