@@ -30,6 +30,11 @@ type
         o*: ptr CassValue
         gcHold: GcHoldRef
 
+    Duration* = object
+        months*: int32
+        days*: int32
+        nanos*: int64
+
 proc finalize(c: Cluster) = cass_cluster_free(c.o)
 proc finalize(c: Session) = cass_session_free(c.o)
 proc finalize(c: Result) = cass_result_free(c.o)
@@ -447,6 +452,24 @@ converter toBool*(v: Value): bool =
     chck cass_value_get_bool(v.o, addr b)
     result = bool(b)
 
+converter toDuration*(v: Value): Duration =
+    var months: int32
+    var days: int32
+    var nanos: int64
+    chck v.o.cass_value_get_duration(addr months, addr days, addr nanos)
+    result = Duration(months: months, days: days, nanos: nanos)
+
+converter toCassUuid*(v: Value): CassUuid =
+    var u: CassUuid
+    chck cass_value_get_uuid(v.o, addr u)
+    result = u
+
+proc `$`*(u: CassUuid): string =
+    var cs = cast[cstring](create(uint8, CASS_UUID_STRING_LENGTH))
+    cass_uuid_string(u, cs)
+    result = $cs
+    cs.dealloc
+
 proc `$`*(v: Value): string =
     case v.kind
     of CASS_VALUE_TYPE_BOOLEAN: $bool(v)
@@ -457,15 +480,15 @@ proc `$`*(v: Value): string =
     of CASS_VALUE_TYPE_INT: $int32(v)
     of CASS_VALUE_TYPE_TEXT, CASS_VALUE_TYPE_VARCHAR: string(v)
     of CASS_VALUE_TYPE_TIMESTAMP: "?TIMESTAMP?"
-    of CASS_VALUE_TYPE_UUID: "?UUID?"
+    of CASS_VALUE_TYPE_UUID: $toCassUuid(v)
     of CASS_VALUE_TYPE_VARINT: "?VARINT?"
-    of CASS_VALUE_TYPE_TIMEUUID: "?TIMEUUID?"
+    of CASS_VALUE_TYPE_TIMEUUID: $toCassUuid(v)
     of CASS_VALUE_TYPE_INET: "?INET?"
-    of CASS_VALUE_TYPE_DATE: "?DATE?"
-    of CASS_VALUE_TYPE_TIME: "?TIME?"
+    of CASS_VALUE_TYPE_DATE: $uint32(v)  # Days since -5877641/6/23 (Y/M/D)
+    of CASS_VALUE_TYPE_TIME: $int64(v)   # Nanoseconds since midnight
     of CASS_VALUE_TYPE_SMALL_INT: $int16(v)
     of CASS_VALUE_TYPE_TINY_INT: $int8(v)
-    of CASS_VALUE_TYPE_DURATION: "?DURATION?"
+    of CASS_VALUE_TYPE_DURATION: $toDuration(v)
     of CASS_VALUE_TYPE_LIST: "?LIST?"
     of CASS_VALUE_TYPE_MAP: "?MAP?"
     of CASS_VALUE_TYPE_SET: "?SET?"
